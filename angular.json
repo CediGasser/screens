@@ -8,7 +8,12 @@
   "projects": {
     "screens": {
       "projectType": "application",
-      "schematics": {},
+      "schematics": {
+        "@schematics/angular:component": {
+          "inlineStyle": false,
+          "inlineTemplate": false
+        }
+      },
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
