@@ -1,94 +1,59 @@
-# Historical Data of Screen Sizes and Resolutions
+# Screens
 
-This project is a web app that visually displays the screen sizes of many devices.
-The visuals are similar to [screensizemap.com](https://screensizemap.com/) but with a historical perspective and per device data.
+This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.2.
 
-The devices are ordered by their release date and can be filtered by various criteria such as release date, size, pixel density, manufacturer, and more.
+## Development server
 
-Unauthorized users can view the data visually or in a table format. They can also suggest new devices.
+To start a local development server, run:
 
-Authorized admins can add, edit, or delete devices and their specifications. They can approve or reject user suggestions, which will then be added to the visualizations.
+```bash
+ng serve
+```
 
-## Functional Requirements
+Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
 
+## Code scaffolding
 
-**User Story 1: View device data in table form (Prio “Must”)**
-As an unauthorized user, I want to view all devices in a table, so that I can compare exact specifications.
+Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
 
-Acceptance Criteria
- * The table lists all approved devices.
- * Each row includes at least: device name, manufacturer, release year, screen size, resolution and pixel density.
- * Sorting by release date is possible.
+```bash
+ng generate component component-name
+```
 
-**User Story 2: View device visualizations (Prio “Should”)**
-As an unauthorized user, I want to visually explore screen sizes and resolutions of devices over time, so that I can understand historical trends.
+For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
 
-Acceptance Criteria
- * Devices are displayed in a visual layout comparable to screensizemap.com.
- * Each device visualization reflects its physical screen size and resolution.
- * Only approved devices are shown.
- * A horizontal timeline indicates release dates and allows scrolling through time.
+```bash
+ng generate --help
+```
 
+## Building
 
-**User Story 3: Filter devices (Prio “Must”)**
-As a user, I want to filter devices by various criteria, so that I can narrow down the dataset.
+To build the project run:
 
-Acceptance Criteria
- * Devices can be filtered by:
- * Release date (range)
- * Pixel density (range)
- * Manufacturer
- * Filters apply to both visual and table views.
- * Multiple filters can be combined.
+```bash
+ng build
+```
 
-**User Story 4: Suggest a new device (Prio “Should”)**
-As an unauthorized user, I want to suggest a new device, so that missing historical data can be added.
+This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
 
-Acceptance Criteria
- * A suggestion form is available without authentication.
- * All the required properties have to be provided.
- * Suggested devices are not publicly visible until approved.
- * Suggestions are stored for admin review.
+## Running unit tests
 
-**User Story 5: Admin authentication (Prio “Must”)**
-As an admin, I want to log into the admin area, so that I can manage device data.
+To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
 
-Acceptance Criteria
- * Login requires email and password.
- * Invalid credentials prevent access.
+```bash
+ng test
+```
 
-**User Story 6: Manage devices (Prio “Must”)**
-As an admin, I want to add, edit, or delete devices, so that the dataset remains accurate.
+## Running end-to-end tests
 
-Acceptance Criteria
- * A device includes at least:
- * Name (required)
- * Manufacturer (required)
- * Release date (required)
- * Screen size (required)
- * Resolution (required)
- * Pixel density (computed from screen size and resolution)
- * Devices cannot be saved if required fields are missing.
- * Changes are persisted immediately.
+For end-to-end (e2e) testing, run:
 
-**User Story 7: Review suggestions (Prio “Should”)**
-As an admin, I want to review user suggestions, so that I can curate the dataset.
+```bash
+ng e2e
+```
 
-Acceptance Criteria
- * All suggestions are visible in the admin area.
- * A suggestion can be approved or rejected.
- * Approved suggestions create a new device entry.
- * Rejected suggestions are deleted.
+Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
 
-## Quality Requirements
- * The public visualization must be usable on desktop, tablet, and mobile devices.
- * The public visualization must load within 1 second on a 4G connection.
- * Administrative actions (create, update, delete, approve) are logged.
- * Core functionality is covered by automated unit and integration tests.
+## Additional Resources
 
-## Architecture
-
- * Frontend: Angular
- * Backend: Node.js with Express
- * Database: MongoDB
-
+For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
