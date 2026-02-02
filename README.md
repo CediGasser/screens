@@ -11,7 +11,16 @@ Authorized admins can add, edit, or delete devices and their specifications. The
 
 ## Functional Requirements
 
-**User Story 1: View device visualizations (Prio “Must”)**
+
+**User Story 1: View device data in table form (Prio “Must”)**
+As an unauthorized user, I want to view all devices in a table, so that I can compare exact specifications.
+
+Acceptance Criteria
+ * The table lists all approved devices.
+ * Each row includes at least: device name, manufacturer, release year, screen size, resolution and pixel density.
+ * Sorting by release date is possible.
+
+**User Story 2: View device visualizations (Prio “Should”)**
 As an unauthorized user, I want to visually explore screen sizes and resolutions of devices over time, so that I can understand historical trends.
 
 Acceptance Criteria
@@ -20,14 +29,6 @@ Acceptance Criteria
  * Only approved devices are shown.
  * A horizontal timeline indicates release dates and allows scrolling through time.
 
-
-**User Story 2: View device data in table form (Prio “Could”)**
-As an unauthorized user, I want to view all devices in a table, so that I can compare exact specifications.
-
-Acceptance Criteria
- * The table lists all approved devices.
- * Each row includes at least: device name, manufacturer, release year, screen size, resolution and pixel density.
- * Sorting by release date is possible.
 
 **User Story 3: Filter devices (Prio “Must”)**
 As a user, I want to filter devices by various criteria, so that I can narrow down the dataset.
