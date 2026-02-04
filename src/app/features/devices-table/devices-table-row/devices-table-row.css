@@ -1,0 +1,22 @@
+td {
+	padding: 0.5rem 0.75rem;
+	color: var(--gray-900);
+	border-bottom: 1px solid var(--gray-400);
+	vertical-align: middle;
+}
+
+tr:last-child td {
+	border-bottom: none;
+}
+
+/* Center numeric / measurement columns */
+td:nth-child(5),
+td:nth-child(6),
+td:nth-child(7),
+td:nth-child(8) {
+	text-align: center;
+}
+
+tr:hover {
+	background-color: color-mix(in srgb, var(--pill-accent) 6%, transparent);
+}
