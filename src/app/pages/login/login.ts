@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { LoginForm } from './login-form/login-form';
+import { AuthService } from '../../services/auth-service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -11,7 +13,12 @@ import { LoginForm } from './login-form/login-form';
   styleUrl: './login.css',
 })
 export class Login {
+  constructor(private authService: AuthService, private router: Router) {}
+
   loginUser(user: any) {
     console.log('User logged in', user);
+    this.authService.login(user.email, user.password).then(() => {
+      this.router.navigate(['/admin']);
+    });
   }
 }

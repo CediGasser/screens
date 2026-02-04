@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
-import { RouterOutlet, RouterLink } from '@angular/router';
+import { RouterOutlet, RouterLink, Router } from '@angular/router';
+import { AuthService } from './services/auth-service';
 
 @Component({
   selector: 'app-root',
@@ -7,22 +8,30 @@ import { RouterOutlet, RouterLink } from '@angular/router';
   template: `
     <main class="main">
       <header>
-        <div>
+        <a class="logo" [routerLink]="['/']">
           <h1>{{ title() }}</h1>
-        </div>
-        <div class="divider" role="separator" aria-label="Divider"></div>
+        </a>
         <nav class="pill-group">
-          @for (item of [
-            { title: 'Home', link: ['/'] },
-            { title: 'Login', link: ['/login'] },
-            { title: 'Admin', link: ['/admin'] },
-          ]; track item.title) {
-            <a
-              class="pill"
-              [routerLink]="item.link"
-            >
-              <span>{{ item.title }}</span>
-            </a>
+          @if (authService.isAuthenticated()) {
+          <a
+            class="pill"
+            [routerLink]="['/admin']"
+          >
+            <span>Admin</span>
+          </a>
+          <button
+            class="pill"
+            (click)="logout()"
+          >
+            <span>Logout</span>
+          </button>
+          } @else {
+          <a
+            class="pill"
+            [routerLink]="['/login']"
+          >
+            <span>Login</span>
+          </a>
           }
         </nav>
       </header>
@@ -32,4 +41,12 @@ import { RouterOutlet, RouterLink } from '@angular/router';
 })
 export class App {
   protected readonly title = signal('Screens');
+
+  constructor(protected authService: AuthService, private router: Router) {}
+
+  logout() {
+    this.authService.logout().then(() => {
+      this.router.navigate(['/']);
+    });
+  }
 }

@@ -21,7 +21,7 @@ interface LoginData {
 
     <div>
       <label for="password">Password:
-        <input id="password" [formField]="loginForm.password"/>
+        <input type="password" id="password" [formField]="loginForm.password"/>
       </label>
       <app-form-field-error [fieldState]="loginForm.password()"></app-form-field-error>
     </div>
