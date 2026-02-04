@@ -1,0 +1,17 @@
+import { Component, input } from '@angular/core';
+import { FieldState } from '@angular/forms/signals';
+
+@Component({
+  selector: 'app-form-field-error',
+  imports: [],
+  template: `
+  <div class="form-field-error">
+    @if (fieldState().invalid() && fieldState().touched()) {
+      <div class="error-message">{{ fieldState().errors()[0].message }}</div>
+    }
+  </div>`,
+  styleUrl: './form-field-error.css',
+})
+export class FormFieldError {
+  fieldState = input.required<FieldState<any>>();
+}

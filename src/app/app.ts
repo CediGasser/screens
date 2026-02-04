@@ -1,10 +1,33 @@
 import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.html',
+  imports: [RouterOutlet, RouterLink],
+  template: `
+    <main class="main">
+      <header>
+        <div>
+          <h1>Hello, {{ title() }}</h1>
+        </div>
+        <div class="divider" role="separator" aria-label="Divider"></div>
+        <nav class="pill-group">
+          @for (item of [
+            { title: 'Home', link: ['/'] },
+            { title: 'Login', link: ['/login'] },
+            { title: 'Admin', link: ['/admin'] },
+          ]; track item.title) {
+            <a
+              class="pill"
+              [routerLink]="item.link"
+            >
+              <span>{{ item.title }}</span>
+            </a>
+          }
+        </nav>
+      </header>
+      <router-outlet />
+    </main>`,
   styleUrl: './app.css'
 })
 export class App {

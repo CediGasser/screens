@@ -1,0 +1,36 @@
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: true;
+}
+
+@keyframes rotate {
+  to {
+    --angle: 1turn;
+  }
+}
+
+.gradient-border {
+  padding: 0.5em 1.25em;
+  
+  border: 5px solid transparent;
+  background:
+    linear-gradient(white) padding-box,
+    conic-gradient(from var(--angle), 
+      var(--bright-blue),
+      var(--electric-violet), 
+      var(--french-violet), 
+      var(--vivid-pink), 
+      var(--hot-red),
+      var(--orange-red),
+      var(--vivid-pink), 
+      var(--bright-blue)) 
+      border-box;
+  animation: rotate 3s linear infinite;
+  animation-play-state: paused;
+}
+
+.gradient-border.animated:hover,
+.gradient-border.animated:focus-visible {
+  animation-play-state: running;
+}
