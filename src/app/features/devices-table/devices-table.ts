@@ -24,7 +24,7 @@ import { DevicesTableRow } from './devices-table-row/devices-table-row';
       </thead>
       <tbody>
         @for (device of devices(); track device.id) {
-          <app-devices-table-row [device]="device" [enableOptions]="enableOptions()"></app-devices-table-row>
+          <tr app-devices-table-row [device]="device" [enableOptions]="enableOptions()"></tr>
         }
       </tbody>
     </table>

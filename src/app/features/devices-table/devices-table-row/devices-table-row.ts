@@ -3,25 +3,23 @@ import { Device } from '../../../services/devices-api';
 import { DatePipe, DecimalPipe } from '@angular/common';
 
 @Component({
-  selector: 'app-devices-table-row',
+  selector: 'tr[app-devices-table-row]',
   imports: [DatePipe, DecimalPipe],
   template: `
-    <tr>
-      <td>{{ device().manufacturer }}</td>
-      <td>{{ device().name }}</td>
-      <td>{{ device().type }}</td>
-      <td>{{ device().releaseDate | date:'longDate' }}</td>
-      <td>{{ device().screenSize }}</td>
-      <td>{{ device().screenPixelWidth }}x{{ device().screenPixelHeight }}</td>
-      <td>{{ pixelDensity() | number:'1.1-2' }}</td>
-      <td>{{ device().screenCornerRadius }}</td>
-      @if (enableOptions()) {
-        <td>
-          <button>Edit</button>
-          <button>Delete</button>
-        </td>
-      }
-    </tr>
+    <td>{{ device().manufacturer }}</td>
+    <td>{{ device().name }}</td>
+    <td>{{ device().type }}</td>
+    <td>{{ device().releaseDate | date:'longDate' }}</td>
+    <td>{{ device().screenSize }}</td>
+    <td>{{ device().screenPixelWidth }}x{{ device().screenPixelHeight }}</td>
+    <td>{{ pixelDensity() | number:'1.1-2' }}</td>
+    <td>{{ device().screenCornerRadius }}</td>
+    @if (enableOptions()) {
+      <td>
+        <button>Edit</button>
+        <button>Delete</button>
+      </td>
+    }
   `,
   styleUrl: './devices-table-row.css',
 })
