@@ -6,8 +6,10 @@ import { Device, DevicesApi } from '../../services/devices-api';
   selector: 'app-admin',
   imports: [DevicesTable],
   template: `
-    <h1>Admin Dashboard</h1>
-    <app-devices-table [devices]="devices()" [enableOptions]="true"></app-devices-table>
+    <section>
+      <h1>Admin Dashboard</h1>
+      <app-devices-table [devices]="devices()" [enableOptions]="true"></app-devices-table>
+    </section>
   `,
   styleUrl: './admin.css',
 })
