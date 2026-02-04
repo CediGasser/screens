@@ -8,7 +8,7 @@ import { RouterOutlet, RouterLink } from '@angular/router';
     <main class="main">
       <header>
         <div>
-          <h1>Hello, {{ title() }}</h1>
+          <h1>{{ title() }}</h1>
         </div>
         <div class="divider" role="separator" aria-label="Divider"></div>
         <nav class="pill-group">
@@ -31,5 +31,5 @@ import { RouterOutlet, RouterLink } from '@angular/router';
   styleUrl: './app.css'
 })
 export class App {
-  protected readonly title = signal('screens');
+  protected readonly title = signal('Screens');
 }
