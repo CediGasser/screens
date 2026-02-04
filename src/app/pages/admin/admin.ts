@@ -1,11 +1,20 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
+import { DevicesTable } from '../../features/devices-table/devices-table';
+import { Device, DevicesApi } from '../../services/devices-api';
 
 @Component({
   selector: 'app-admin',
-  imports: [],
-  templateUrl: './admin.html',
+  imports: [DevicesTable],
+  template: `
+    <h1>Admin Dashboard</h1>
+    <app-devices-table [devices]="devices()" [enableOptions]="true"></app-devices-table>
+  `,
   styleUrl: './admin.css',
 })
 export class Admin {
+  protected devices = signal<Device[]>([]);
 
+  constructor(private devicesApi: DevicesApi) {
+    this.devices.set(this.devicesApi.getAllDevices());
+  }
 }

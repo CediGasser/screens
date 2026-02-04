@@ -17,11 +17,14 @@ import { DevicesTableRow } from './devices-table-row/devices-table-row';
           <th>Resolution</th>
           <th>Pixel Density</th>
           <th>Corner Radius</th>
+          @if (enableOptions()) {
+            <th>Options</th>
+          }
         </tr>
       </thead>
       <tbody>
         @for (device of devices(); track device.id) {
-          <app-devices-table-row [device]="device"></app-devices-table-row>
+          <app-devices-table-row [device]="device" [enableOptions]="enableOptions()"></app-devices-table-row>
         }
       </tbody>
     </table>
@@ -30,4 +33,5 @@ import { DevicesTableRow } from './devices-table-row/devices-table-row';
 })
 export class DevicesTable {
   devices = input.required<Device[]>();
+  enableOptions = input<boolean>(false);
 }

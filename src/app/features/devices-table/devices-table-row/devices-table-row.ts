@@ -15,12 +15,19 @@ import { DatePipe, DecimalPipe } from '@angular/common';
       <td>{{ device().screenPixelWidth }}x{{ device().screenPixelHeight }}</td>
       <td>{{ pixelDensity() | number:'1.1-2' }}</td>
       <td>{{ device().screenCornerRadius }}</td>
+      @if (enableOptions()) {
+        <td>
+          <button>Edit</button>
+          <button>Delete</button>
+        </td>
+      }
     </tr>
   `,
   styleUrl: './devices-table-row.css',
 })
 export class DevicesTableRow {
   device = input.required<Device>();
+  enableOptions = input<boolean>(false);
 
   pixelDensity = computed(() => this.device().screenPixelWidth / this.device().screenSize);
 }
