@@ -1,4 +1,6 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs';
 
 export interface Device {
   id: string;
@@ -21,7 +23,7 @@ export interface Device {
   providedIn: 'root',
 })
 export class DevicesApi {
-  // TODO: Replace with real API calls
+  constructor(private http: HttpClient) {}
   private devices: Device[] = [
     {
       id: 'device-001',
@@ -57,7 +59,7 @@ export class DevicesApi {
       screenPixelHeight: 2400,
       screenPixelWidth: 1080,
       screenCornerRadius: 16,
-      isDraft: false,
+      isDraft: true,
     },
     {
       id: 'device-004',
@@ -81,7 +83,7 @@ export class DevicesApi {
       screenPixelHeight: 2560,
       screenPixelWidth: 1664,
       screenCornerRadius: 8,
-      isDraft: false,
+      isDraft: true,
     },
     {
       id: 'device-006',
@@ -105,11 +107,11 @@ export class DevicesApi {
       screenPixelHeight: 1920,
       screenPixelWidth: 1200,
       screenCornerRadius: 10,
-      isDraft: false,
+      isDraft: true,
     }
   ];
 
-  getAllDevices(): Device[] {
-    return this.devices;
+  getDevices(): Observable<Device[]> {
+    return of(this.devices);
   }
 }

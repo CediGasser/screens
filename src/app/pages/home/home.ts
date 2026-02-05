@@ -1,6 +1,7 @@
-import { Component, signal } from '@angular/core';
+import { Component, Signal, signal } from '@angular/core';
 import { DevicesTable } from "../../features/devices-table/devices-table";
 import { Device, DevicesApi } from '../../services/devices-api';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-home',
@@ -15,9 +16,9 @@ import { Device, DevicesApi } from '../../services/devices-api';
 })
 
 export class Home {
-  protected devices = signal<Device[]>([]);
+  protected devices: Signal<Device[]>;
 
   constructor(private devicesApi: DevicesApi) {
-    this.devices.set(this.devicesApi.getAllDevices());
+    this.devices = toSignal(this.devicesApi.getDevices(), { initialValue: [] });
   }
 }
