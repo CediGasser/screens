@@ -9,6 +9,8 @@ export async function getAllDevices() {
 }
 
 export async function getDeviceById(id: string): Promise<Device | null> {
+  if (!ObjectId.isValid(id)) return null;
+
   const { devicesCollection } = await getDbConnection();
   const doc = await devicesCollection.findOne({ _id: new ObjectId(id) });
   return doc ? mapDocumentToDevice(doc) : null;
@@ -37,6 +39,8 @@ export async function updateDevice(
   id: string,
   device: Partial<DeviceDocument>,
 ): Promise<Device | null> {
+  if (!ObjectId.isValid(id)) return null;
+
   const { devicesCollection } = await getDbConnection();
   const result = await devicesCollection.findOneAndUpdate(
     { _id: new ObjectId(id) },
@@ -47,6 +51,8 @@ export async function updateDevice(
 }
 
 export async function deleteDevice(id: string): Promise<boolean> {
+  if (!ObjectId.isValid(id)) return false;
+
   const { devicesCollection } = await getDbConnection();
   const result = await devicesCollection.deleteOne({ _id: new ObjectId(id) });
   return result.acknowledged;

@@ -6,17 +6,18 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-login',
   imports: [LoginForm],
-  template:`
-  <section class="login-container">
+  template: ` <section class="login-container">
     <app-login-form (onLogin)="loginUser($event)"></app-login-form>
   </section>`,
   styleUrl: './login.css',
 })
 export class Login {
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+  ) {}
 
   loginUser(user: any) {
-    console.log('User logged in', user);
     this.authService.login(user.email, user.password).then(() => {
       this.router.navigate(['/admin']);
     });
