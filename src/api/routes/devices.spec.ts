@@ -106,63 +106,104 @@ describe('Devices API routes', () => {
   const app = express();
   app.use('/api', apiRouter);
 
-  it('should initially return an empty array', async () => {
-    const response = await request(app).get('/api/devices');
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual([]);
+  describe('Happy path tests', () => {
+    it('should initially return an empty array', async () => {
+      const response = await request(app).get('/api/devices');
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual([]);
+    });
+
+    it('should create a new device and return it with a generated id', async () => {
+      const { id, ...exampleDevice } = MOCK_DEVICES[0];
+      const response = await request(app).post('/api/devices').send(exampleDevice);
+      expect(response.status).toBe(201);
+      expect(response.body).toMatchObject(exampleDevice);
+      expect(response.body.id).toBeDefined();
+    });
+
+    it('should return the created device when fetching all devices', async () => {
+      const response = await request(app).get('/api/devices');
+      expect(response.status).toBe(200);
+      expect(response.body.length).toBe(1);
+      const { id, ...expectedDevice } = MOCK_DEVICES[0];
+      expect(response.body[0]).toMatchObject(expectedDevice);
+    });
+
+    it('should return the created device when fetching by id', async () => {
+      const allDevicesResponse = await request(app).get('/api/devices');
+      const createdDeviceId = allDevicesResponse.body[0].id;
+
+      const response = await request(app).get(`/api/devices/${createdDeviceId}`);
+      expect(response.status).toBe(200);
+      const { id, ...expectedDevice } = MOCK_DEVICES[0];
+      expect(response.body).toMatchObject(expectedDevice);
+    });
+
+    it('should return 404 for non-existing device id', async () => {
+      const response = await request(app).get('/api/devices/non-existing-id');
+      expect(response.status).toBe(404);
+      expect(response.body).toEqual({ error: 'Device not found' });
+    });
+
+    it('should update an existing device', async () => {
+      const allDevicesResponse = await request(app).get('/api/devices');
+      const createdDeviceId = allDevicesResponse.body[0].id;
+
+      const updatedData = { name: 'Updated Device Name' };
+      const response = await request(app).put(`/api/devices/${createdDeviceId}`).send(updatedData);
+      expect(response.status).toBe(200);
+      expect(response.body.name).toBe(updatedData.name);
+    });
+
+    it('should delete an existing device', async () => {
+      const allDevicesResponse = await request(app).get('/api/devices');
+      const createdDeviceId = allDevicesResponse.body[0].id;
+
+      const deleteResponse = await request(app).delete(`/api/devices/${createdDeviceId}`);
+      expect(deleteResponse.status).toBe(204);
+
+      const getResponse = await request(app).get(`/api/devices/${createdDeviceId}`);
+      expect(getResponse.status).toBe(404);
+    });
   });
 
-  it('should create a new device and return it with a generated id', async () => {
-    const { id, ...exampleDevice } = MOCK_DEVICES[0];
-    const response = await request(app).post('/api/devices').send(exampleDevice);
-    expect(response.status).toBe(201);
-    expect(response.body).toMatchObject(exampleDevice);
-    expect(response.body.id).toBeDefined();
-  });
+  describe('Error path tests', () => {
+    it('should return 404 when getting a device with invalid ObjectId format', async () => {
+      const response = await request(app).get('/api/devices/invalid-id');
+      expect(response.status).toBe(404);
+      expect(response.body).toEqual({ error: 'Device not found' });
+    });
 
-  it('should return the created device when fetching all devices', async () => {
-    const response = await request(app).get('/api/devices');
-    expect(response.status).toBe(200);
-    expect(response.body.length).toBe(1);
-    const { id, ...expectedDevice } = MOCK_DEVICES[0];
-    expect(response.body[0]).toMatchObject(expectedDevice);
-  });
+    it('should return 404 when getting a device with valid but non-existing ObjectId', async () => {
+      const response = await request(app).get('/api/devices/507f1f77bcf86cd799439011');
+      expect(response.status).toBe(404);
+      expect(response.body).toEqual({ error: 'Device not found' });
+    });
 
-  it('should return the created device when fetching by id', async () => {
-    const allDevicesResponse = await request(app).get('/api/devices');
-    const createdDeviceId = allDevicesResponse.body[0].id;
+    it('should return 404 when updating a device with invalid ObjectId format', async () => {
+      const response = await request(app).put('/api/devices/invalid-id').send({ name: 'Test' });
+      expect(response.status).toBe(404);
+      expect(response.body).toEqual({ error: 'Device not found' });
+    });
 
-    const response = await request(app).get(`/api/devices/${createdDeviceId}`);
-    expect(response.status).toBe(200);
-    const { id, ...expectedDevice } = MOCK_DEVICES[0];
-    expect(response.body).toMatchObject(expectedDevice);
-  });
+    it('should return 404 when updating a device with valid but non-existing ObjectId', async () => {
+      const response = await request(app)
+        .put('/api/devices/507f1f77bcf86cd799439011')
+        .send({ name: 'Test' });
+      expect(response.status).toBe(404);
+      expect(response.body).toEqual({ error: 'Device not found' });
+    });
 
-  it('should return 404 for non-existing device id', async () => {
-    const response = await request(app).get('/api/devices/non-existing-id');
-    expect(response.status).toBe(404);
-    expect(response.body).toEqual({ error: 'Device not found' });
-  });
+    it('should return 204 when deleting a device with invalid ObjectId format', async () => {
+      const response = await request(app).delete('/api/devices/invalid-id');
+      expect(response.status).toBe(204);
+    });
 
-  it('should update an existing device', async () => {
-    const allDevicesResponse = await request(app).get('/api/devices');
-    const createdDeviceId = allDevicesResponse.body[0].id;
-
-    const updatedData = { name: 'Updated Device Name' };
-    const response = await request(app).put(`/api/devices/${createdDeviceId}`).send(updatedData);
-    expect(response.status).toBe(200);
-    expect(response.body.name).toBe(updatedData.name);
-  });
-
-  it('should delete an existing device', async () => {
-    const allDevicesResponse = await request(app).get('/api/devices');
-    const createdDeviceId = allDevicesResponse.body[0].id;
-
-    const deleteResponse = await request(app).delete(`/api/devices/${createdDeviceId}`);
-    expect(deleteResponse.status).toBe(204);
-
-    const getResponse = await request(app).get(`/api/devices/${createdDeviceId}`);
-    expect(getResponse.status).toBe(404);
+    it('should return 404 when deleting a device with valid but non-existing ObjectId', async () => {
+      const response = await request(app).delete('/api/devices/507f1f77bcf86cd799439011');
+      expect(response.status).toBe(404);
+      expect(response.body).toEqual({ error: 'Device not found' });
+    });
   });
 });
 

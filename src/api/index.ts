@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { Router, json } from 'express';
 import { logger } from './middlewares/logger';
+import { errorMiddleware } from './middlewares/error';
 import { devicesRouter } from './routes/devices';
 
 const apiRouter = Router();
@@ -12,5 +13,7 @@ apiRouter.get('/health', (req, res) => {
 });
 
 apiRouter.use('/devices', devicesRouter);
+
+apiRouter.use(errorMiddleware);
 
 export default apiRouter;

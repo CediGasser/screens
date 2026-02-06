@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 
 export interface Device {
   id: string;
@@ -9,7 +9,7 @@ export interface Device {
   type: 'smartphone' | 'tablet' | 'laptop' | 'desktop' | 'wearable' | 'other';
   releaseDate: string;
   /** Screen diagonal in mm */
-  screenSize: number; 
+  screenSize: number;
   screenPixelHeight: number;
   screenPixelWidth: number;
   screenCornerRadius: number;
@@ -108,10 +108,10 @@ export class DevicesApi {
       screenPixelWidth: 1200,
       screenCornerRadius: 10,
       isDraft: true,
-    }
+    },
   ];
 
   getDevices(): Observable<Device[]> {
-    return of(this.devices);
+    return this.http.get<Device[]>('/api/devices');
   }
 }
