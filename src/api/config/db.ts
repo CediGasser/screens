@@ -14,10 +14,13 @@ const getUri = () => testUri || process.env['MONGODB_URI'] || 'mongodb://localho
 
 export const getDbConnection = async () => {
   const uri = getUri();
-  const client = await MongoClient.connect(uri);
-  const db = client.db('screens');
-
-  const devicesCollection = db.collection<DeviceDocument>('devices');
-
-  return { db, devicesCollection, client };
+  try {
+    const client = await MongoClient.connect(uri);
+    const db = client.db('screens');
+    const devicesCollection = db.collection<DeviceDocument>('devices');
+    return { db, devicesCollection, client };
+  } catch (error) {
+    console.error('Failed to connect to MongoDB:', error);
+    throw error;
+  }
 };
