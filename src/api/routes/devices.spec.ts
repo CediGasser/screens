@@ -1,12 +1,9 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest';
 import express, { RequestHandler } from 'express';
 import request from 'supertest';
-import { MongoMemoryServer } from 'mongodb-memory-server';
 import apiRouter from '../index';
-import { setTestDbUri } from '../config/db';
 import type { User } from '../middlewares/auth';
-
-let mongod: MongoMemoryServer;
+import { stopDb } from '../config/__mocks__/db';
 
 const MOCK_DEVICES = [
   {
@@ -327,6 +324,8 @@ vi.mock('../middlewares/auth', () => ({
   }) as RequestHandler,
 }));
 
+vi.mock('../config/db');
+
 function setMockUser(user: User) {
   mockUser = user;
 }
@@ -345,17 +344,6 @@ function setUnauthenticated() {
   setMockUser({ authenticated: false });
 }
 
-beforeAll(async () => {
-  mongod = await MongoMemoryServer.create({
-    instance: {
-      dbName: 'screens',
-    },
-  });
-  setTestDbUri(mongod.getUri());
-});
-
 afterAll(async () => {
-  if (mongod) {
-    await mongod.stop();
-  }
+  await stopDb();
 });

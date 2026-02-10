@@ -1,7 +1,14 @@
 import { MongoClient } from 'mongodb';
-import type { DeviceDocument } from '../types';
+import type { DeviceDocument } from '../../types';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 
-const URI = process.env['MONGODB_URI'] || 'mongodb://localhost:27017/screens';
+const mongod = await MongoMemoryServer.create({
+  instance: {
+    dbName: 'screens',
+  },
+});
+
+const URI = mongod.getUri();
 
 export const getDbConnection = async () => {
   try {
@@ -13,4 +20,8 @@ export const getDbConnection = async () => {
     console.error('Failed to connect to MongoDB:', error);
     throw error;
   }
+};
+
+export const stopDb = async () => {
+  await mongod.stop();
 };
