@@ -1,57 +1,61 @@
-import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { Injectable, PLATFORM_ID, Inject, inject } from '@angular/core';
+import { isPlatformBrowser, DOCUMENT } from '@angular/common';
+import { OAuthService } from 'angular-oauth2-oidc';
+import { createAuthConfig } from '../auth.config';
+import { ConfigService } from './config-service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private isBrowser: boolean;
+  private readonly isBrowser: boolean;
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
+    @Inject(DOCUMENT) private document: Document,
+    private oauthService: OAuthService,
+  ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
-  }
 
-  // TODO: Replace with real authentication logic
-  login(email: string, password: string) {
-    const promise = new Promise<{ token: string }>((resolve, reject) => {
-      // Simulate an HTTP request
-      setTimeout(() => {
-        if (email === 'admin@example.com' && password === 'password') {
-          resolve({ token: 'fake-jwt-token' });
-        } else {
-          reject('Invalid username or password');
-        }
-      }, 1000);
-    }).then((response) => {
-      if (this.isBrowser) {
-        localStorage.setItem('authToken', response.token);
-        localStorage.setItem('expiresAt', (Date.now() + 60 * 60 * 1000).toString()); // 1 hour expiry
-      }
-      return response;
-    })
-
-    return promise;
-  }
-
-  logout() {
     if (this.isBrowser) {
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('expiresAt');
+      this.configureOAuth();
     }
-    return Promise.resolve();
+  }
+
+  private configureOAuth(): void {
+    const origin = this.document.location.origin;
+    const configService = inject(ConfigService);
+    const config = configService.getConfig();
+    this.oauthService.configure(
+      createAuthConfig(config.oauth.issuer, config.oauth.clientId, origin),
+    );
+    this.oauthService.loadDiscoveryDocumentAndTryLogin();
+  }
+
+  login(): void {
+    this.oauthService.initCodeFlow();
+  }
+
+  logout(): void {
+    this.oauthService.logOut();
   }
 
   isAuthenticated(): boolean {
     if (!this.isBrowser) {
       return false;
     }
-    const token = localStorage.getItem('authToken');
-    const expiresAt = localStorage.getItem('expiresAt');
+    return this.oauthService.hasValidAccessToken();
+  }
 
-    if (!token || !expiresAt) {
-      return false;
-    }
+  getAccessToken(): string {
+    return this.oauthService.getAccessToken();
+  }
 
-    return Date.now() < parseInt(expiresAt, 10);
+  getIdToken(): string {
+    return this.oauthService.getIdToken();
+  }
+
+  getUserProfile() {
+    return this.oauthService.getIdentityClaims();
   }
 }

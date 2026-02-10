@@ -12,6 +12,15 @@ apiRouter.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
+apiRouter.get('/config', (req, res) => {
+  res.json({
+    oauth: {
+      issuer: process.env['OAUTH_ISSUER'],
+      clientId: process.env['OAUTH_CLIENT_ID'],
+    },
+  });
+});
+
 apiRouter.use('/devices', devicesRouter);
 
 apiRouter.use(errorMiddleware);
