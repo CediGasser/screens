@@ -4,10 +4,10 @@ export function createAuthConfig(issuer: string, clientId: string, origin: strin
   return {
     issuer: issuer,
     clientId: clientId,
-    redirectUri: origin + '/admin',
+    redirectUri: origin + '/auth/callback',
     responseType: 'code',
     scope: 'openid profile email',
-    showDebugInformation: false,
+    showDebugInformation: true,
     useSilentRefresh: true,
     silentRefreshRedirectUri: origin + '/silent-refresh.html',
     strictDiscoveryDocumentValidation: false,

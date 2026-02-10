@@ -9,6 +9,8 @@ import { ConfigService } from './config-service';
 })
 export class AuthService {
   private readonly isBrowser: boolean;
+  private discoveryDone: Promise<void> = Promise.resolve();
+  private loginDone: Promise<void> = Promise.resolve();
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -29,11 +31,17 @@ export class AuthService {
     this.oauthService.configure(
       createAuthConfig(config.oauth.issuer, config.oauth.clientId, origin),
     );
-    this.oauthService.loadDiscoveryDocumentAndTryLogin();
+    this.discoveryDone = this.oauthService.loadDiscoveryDocument().then(() => {});
+    this.loginDone = this.discoveryDone.then(() => this.oauthService.tryLoginCodeFlow());
   }
 
-  login(): void {
-    this.oauthService.initCodeFlow();
+  async login(state?: string): Promise<void> {
+    await this.discoveryDone;
+    this.oauthService.initCodeFlow(state);
+  }
+
+  async waitForLogin(): Promise<void> {
+    await this.loginDone;
   }
 
   logout(): void {
@@ -57,5 +65,17 @@ export class AuthService {
 
   getUserProfile() {
     return this.oauthService.getIdentityClaims();
+  }
+
+  getRedirectState(): string | undefined {
+    const state = this.oauthService.state;
+    if (state) {
+      try {
+        return decodeURIComponent(state);
+      } catch (e) {
+        console.warn('Failed to decode redirect state:', e);
+      }
+    }
+    return undefined;
   }
 }
