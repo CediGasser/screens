@@ -1,19 +1,12 @@
-import express from 'express';
+import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest';
+import express, { RequestHandler } from 'express';
 import request from 'supertest';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { setTestDbUri } from '../config/db';
 import apiRouter from '../index';
+import { setTestDbUri } from '../config/db';
+import type { User } from '../middlewares/auth';
 
 let mongod: MongoMemoryServer;
-
-beforeAll(async () => {
-  mongod = await MongoMemoryServer.create({
-    instance: {
-      dbName: 'screens',
-    },
-  });
-  setTestDbUri(mongod.getUri());
-});
 
 const MOCK_DEVICES = [
   {
@@ -106,7 +99,11 @@ describe('Devices API routes', () => {
   const app = express();
   app.use('/api', apiRouter);
 
-  describe('Happy path tests', () => {
+  describe('Happy path tests (authenticated)', () => {
+    beforeEach(() => {
+      setAuthenticated();
+    });
+
     it('should initially return an empty array', async () => {
       const response = await request(app).get('/api/devices');
       expect(response.status).toBe(200);
@@ -139,12 +136,6 @@ describe('Devices API routes', () => {
       expect(response.body).toMatchObject(expectedDevice);
     });
 
-    it('should return 404 for non-existing device id', async () => {
-      const response = await request(app).get('/api/devices/non-existing-id');
-      expect(response.status).toBe(404);
-      expect(response.body).toEqual({ error: 'Device not found' });
-    });
-
     it('should update an existing device', async () => {
       const allDevicesResponse = await request(app).get('/api/devices');
       const createdDeviceId = allDevicesResponse.body[0].id;
@@ -167,7 +158,11 @@ describe('Devices API routes', () => {
     });
   });
 
-  describe('Error path tests', () => {
+  describe('Error path tests (authenticated)', () => {
+    beforeEach(() => {
+      setAuthenticated();
+    });
+
     it('should return 404 when getting a device with invalid ObjectId format', async () => {
       const response = await request(app).get('/api/devices/invalid-id');
       expect(response.status).toBe(404);
@@ -205,6 +200,158 @@ describe('Devices API routes', () => {
       expect(response.body).toEqual({ error: 'Device not found' });
     });
   });
+
+  describe('Authorization tests', () => {
+    let publishedDeviceId: string;
+    let draftDeviceId: string;
+
+    beforeAll(async () => {
+      // Create test devices as authenticated user
+      setAuthenticated();
+
+      const { id: _id1, ...publishedDevice } = MOCK_DEVICES[1]; // isDraft: false
+      const publishedRes = await request(app).post('/api/devices').send(publishedDevice);
+      publishedDeviceId = publishedRes.body.id;
+
+      const { id: _id2, ...draftDevice } = MOCK_DEVICES[2]; // isDraft: true
+      const draftRes = await request(app).post('/api/devices').send(draftDevice);
+      draftDeviceId = draftRes.body.id;
+    });
+
+    describe('Unauthenticated users', () => {
+      beforeEach(() => {
+        setUnauthenticated();
+      });
+
+      it('should only return published devices when listing all', async () => {
+        const response = await request(app).get('/api/devices');
+        expect(response.status).toBe(200);
+        expect(response.body.every((d: { isDraft: boolean }) => d.isDraft === false)).toBe(true);
+      });
+
+      it('should return a published device by id', async () => {
+        const response = await request(app).get(`/api/devices/${publishedDeviceId}`);
+        expect(response.status).toBe(200);
+        expect(response.body.isDraft).toBe(false);
+      });
+
+      it('should return 404 for a draft device by id', async () => {
+        const response = await request(app).get(`/api/devices/${draftDeviceId}`);
+        expect(response.status).toBe(404);
+        expect(response.body).toEqual({ error: 'Device not found' });
+      });
+
+      it('should allow creating a draft device', async () => {
+        const { id, ...draftDevice } = MOCK_DEVICES[4]; // isDraft: true
+        const response = await request(app).post('/api/devices').send(draftDevice);
+        expect(response.status).toBe(201);
+        expect(response.body.isDraft).toBe(true);
+      });
+
+      it('should reject creating a published device', async () => {
+        const { id, ...publishedDevice } = MOCK_DEVICES[3]; // isDraft: false
+        const response = await request(app).post('/api/devices').send(publishedDevice);
+        expect(response.status).toBe(401);
+        expect(response.body.error).toBe('Cannot create published device');
+      });
+
+      it('should reject updating a device', async () => {
+        const response = await request(app)
+          .put(`/api/devices/${publishedDeviceId}`)
+          .send({ name: 'Hacked Name' });
+        expect(response.status).toBe(401);
+        expect(response.body.error).toBe('Unauthorized');
+      });
+
+      it('should reject deleting a device', async () => {
+        const response = await request(app).delete(`/api/devices/${publishedDeviceId}`);
+        expect(response.status).toBe(401);
+        expect(response.body.error).toBe('Unauthorized');
+      });
+    });
+
+    describe('Authenticated users', () => {
+      beforeEach(() => {
+        setAuthenticated();
+      });
+
+      it('should return all devices including drafts when listing', async () => {
+        const response = await request(app).get('/api/devices');
+        expect(response.status).toBe(200);
+        const hasDrafts = response.body.some((d: { isDraft: boolean }) => d.isDraft === true);
+        expect(hasDrafts).toBe(true);
+      });
+
+      it('should return a draft device by id', async () => {
+        const response = await request(app).get(`/api/devices/${draftDeviceId}`);
+        expect(response.status).toBe(200);
+        expect(response.body.isDraft).toBe(true);
+      });
+
+      it('should allow creating a published device', async () => {
+        const { id, ...publishedDevice } = MOCK_DEVICES[5]; // isDraft: false
+        const response = await request(app).post('/api/devices').send(publishedDevice);
+        expect(response.status).toBe(201);
+        expect(response.body.isDraft).toBe(false);
+      });
+
+      it('should allow updating a device', async () => {
+        const response = await request(app)
+          .put(`/api/devices/${publishedDeviceId}`)
+          .send({ name: 'Authorized Update' });
+        expect(response.status).toBe(200);
+        expect(response.body.name).toBe('Authorized Update');
+      });
+
+      it('should allow deleting a device', async () => {
+        // Create a device to delete
+        const { id, ...device } = MOCK_DEVICES[6];
+        const createRes = await request(app).post('/api/devices').send(device);
+        const deviceId = createRes.body.id;
+
+        const response = await request(app).delete(`/api/devices/${deviceId}`);
+        expect(response.status).toBe(204);
+      });
+    });
+  });
+});
+
+// Mock the auth middleware before importing apiRouter
+let mockUser: User = { authenticated: false };
+
+vi.mock('../middlewares/auth', () => ({
+  initializeAuth: vi.fn().mockResolvedValue(undefined),
+  authMiddleware: ((req, _res, next) => {
+    req.user = mockUser;
+    next();
+  }) as RequestHandler,
+}));
+
+function setMockUser(user: User) {
+  mockUser = user;
+}
+
+function setAuthenticated() {
+  setMockUser({
+    authenticated: true,
+    sub: 'test-user-id',
+    email: 'test@example.com',
+    roles: [],
+    claims: { sub: 'test-user-id' },
+  });
+}
+
+function setUnauthenticated() {
+  setMockUser({ authenticated: false });
+}
+
+beforeAll(async () => {
+  mongod = await MongoMemoryServer.create({
+    instance: {
+      dbName: 'screens',
+    },
+  });
+  setTestDbUri(mongod.getUri());
 });
 
 afterAll(async () => {

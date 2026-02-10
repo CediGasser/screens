@@ -73,7 +73,15 @@
           "defaultConfiguration": "development"
         },
         "test": {
-          "builder": "@angular/build:unit-test"
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "exclude": ["src/api/**/*.spec.ts"]
+          },
+          "configurations": {
+            "ci": {
+              "watch": false
+            }
+          }
         }
       }
     }

@@ -6,30 +6,30 @@ import { NotFoundError, UnauthorizedError } from '../errors';
 export const devicesRouter = Router();
 
 devicesRouter.get('/', async (req, res) => {
-  const isAdmin = true; // TODO: Replace with actual authentication logic
-  const filteredDevices = isAdmin
+  const isAuthenticated = req.user.authenticated;
+  const filteredDevices = isAuthenticated
     ? await devices.getAllDevices()
     : await devices.getPublishedDevices();
   res.json(filteredDevices);
 });
 
 devicesRouter.get('/:id', async (req, res) => {
-  const isAdmin = true; // TODO: Replace with actual authentication logic
+  const isAuthenticated = req.user.authenticated;
   const device = await devices.getDeviceById(req.params.id);
 
-  if (isAdmin || !device.isDraft) {
+  if (isAuthenticated || !device.isDraft) {
     return res.json(device);
   } else {
-    throw new NotFoundError('Device'); // Hide draft devices from non-admins
+    throw new NotFoundError('Device'); // Hide draft devices from non-authenticated users
   }
 });
 
 devicesRouter.post('/', async (req, res) => {
-  const isAdmin = true; // TODO: Replace with actual authentication logic
+  const isAuthenticated = req.user.authenticated;
 
   const validatedCreateBody: Omit<Device, 'id'> = req.body; // TODO: Add validation logic here
 
-  if (!isAdmin && !validatedCreateBody.isDraft) {
+  if (!isAuthenticated && !validatedCreateBody.isDraft) {
     throw new UnauthorizedError('Cannot create published device');
   }
   const createdDevice = await devices.createDevice(validatedCreateBody);
@@ -37,8 +37,8 @@ devicesRouter.post('/', async (req, res) => {
 });
 
 devicesRouter.put('/:id', async (req, res) => {
-  const isAdmin = true; // TODO: Replace with actual authentication logic
-  if (!isAdmin) {
+  const isAuthenticated = req.user.authenticated;
+  if (!isAuthenticated) {
     throw new UnauthorizedError('Unauthorized');
   }
 
@@ -49,9 +49,9 @@ devicesRouter.put('/:id', async (req, res) => {
 });
 
 devicesRouter.delete('/:id', async (req, res) => {
-  const isAdmin = true; // TODO: Replace with actual authentication logic
+  const isAuthenticated = req.user.authenticated;
 
-  if (!isAdmin) {
+  if (!isAuthenticated) {
     throw new UnauthorizedError('Unauthorized');
   }
 

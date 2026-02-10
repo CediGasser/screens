@@ -1,8 +1,6 @@
 import type { Handler } from 'express';
 
-const logger: Handler = (req, res, next) => {
+export const logger: Handler = (req, _res, next) => {
   console.log(`[Logger Middleware] ${req.method} ${req.url}`);
   next();
 };
-
-export { logger };

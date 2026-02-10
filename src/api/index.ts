@@ -2,11 +2,15 @@ import 'dotenv/config';
 import { Router, json } from 'express';
 import { logger } from './middlewares/logger';
 import { errorMiddleware } from './middlewares/error';
+import { authMiddleware, initializeAuth } from './middlewares/auth';
 import { devicesRouter } from './routes/devices';
+
+await initializeAuth();
 
 const apiRouter = Router();
 apiRouter.use(json());
 apiRouter.use(logger);
+apiRouter.use(authMiddleware);
 
 apiRouter.get('/health', (req, res) => {
   res.json({ status: 'ok' });
