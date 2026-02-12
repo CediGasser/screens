@@ -3,6 +3,7 @@ import { provideRouter } from '@angular/router';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { provideOAuthClient } from 'angular-oauth2-oidc';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
+import { providePrimeNG } from 'primeng/config';
 import { routes } from './app.routes';
 import { provideAppConfig } from './services/config-service';
 import { authInterceptor } from './interceptors/auth-interceptor';
@@ -15,5 +16,6 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(withEventReplay()),
     provideOAuthClient(),
     provideAppConfig(),
+    providePrimeNG(),
   ],
 };

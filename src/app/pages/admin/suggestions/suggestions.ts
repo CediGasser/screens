@@ -8,12 +8,12 @@ import { DeviceFormDialog } from '../../../features/device-form-dialog/device-fo
   imports: [DevicesTable, DeviceFormDialog],
   template: `
     <h2>Suggested Devices</h2>
-    <app-devices-table
-      [devices]="devices()"
-      [enableOptions]="true"
-      (editDevice)="onEditDevice($event)"
-      (deleteDevice)="onDeleteDevice($event)"
-    ></app-devices-table>
+    <app-devices-table [devices]="devices()">
+      <ng-template #actions let-device>
+        <button (click)="onEditDevice(device)">Edit</button>
+        <button (click)="onDeleteDevice(device)">Delete</button>
+      </ng-template>
+    </app-devices-table>
 
     <app-device-form-dialog #deviceFormDialog (deviceUpdated)="onDeviceUpdated($event)" />
   `,
