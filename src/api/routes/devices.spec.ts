@@ -198,6 +198,39 @@ describe('Devices API routes', () => {
     });
   });
 
+  describe('Filter tests', () => {
+    it('should return only draft devices when filter isDraft=true', async () => {
+      setAuthenticated();
+      // Create a draft device
+      const { id, ...draftDevice } = MOCK_DEVICES[2]; // isDraft: true
+      await request(app).post('/api/devices').send(draftDevice);
+
+      const response = await request(app).get('/api/devices?isDraft=true');
+      expect(response.status).toBe(200);
+      expect(response.body.length).toBeGreaterThan(0);
+      expect(response.body.every((d: { isDraft: boolean }) => d.isDraft === true)).toBe(true);
+    });
+
+    it('should return only published devices when filter isDraft=false', async () => {
+      setAuthenticated();
+      // Create a published device
+      const { id, ...publishedDevice } = MOCK_DEVICES[1]; // isDraft: false
+      await request(app).post('/api/devices').send(publishedDevice);
+
+      const response = await request(app).get('/api/devices?isDraft=false');
+      expect(response.status).toBe(200);
+      expect(response.body.length).toBeGreaterThan(0);
+      expect(response.body.every((d: { isDraft: boolean }) => d.isDraft === false)).toBe(true);
+    });
+
+    it('should return an empty array when listing all with filter isDraft=true and user is not authenticated', async () => {
+      setUnauthenticated();
+      const response = await request(app).get('/api/devices?isDraft=true');
+      expect(response.status).toBe(200);
+      expect(response.body.length).toBe(0);
+    });
+  });
+
   describe('Authorization tests', () => {
     let publishedDeviceId: string;
     let draftDeviceId: string;

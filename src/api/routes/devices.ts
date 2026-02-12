@@ -7,9 +7,22 @@ export const devicesRouter = Router();
 
 devicesRouter.get('/', async (req, res) => {
   const isAuthenticated = req.user.authenticated;
-  const filteredDevices = isAuthenticated
-    ? await devices.getAllDevices()
-    : await devices.getPublishedDevices();
+  const isDraftFilter = req.query['isDraft'];
+
+  let filteredDevices;
+
+  if (isDraftFilter === 'true') {
+    // Only authenticated users can access drafts
+    filteredDevices = isAuthenticated ? await devices.getDraftDevices() : [];
+  } else if (isDraftFilter === 'false') {
+    filteredDevices = await devices.getPublishedDevices();
+  } else {
+    // No filter: authenticated users see all, others see only published
+    filteredDevices = isAuthenticated
+      ? await devices.getAllDevices()
+      : await devices.getPublishedDevices();
+  }
+
   res.json(filteredDevices);
 });
 
