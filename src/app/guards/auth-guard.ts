@@ -1,6 +1,6 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
-import { CanActivate, UrlTree } from '@angular/router';
-import { isPlatformBrowser, DOCUMENT } from '@angular/common';
+import { CanActivate, UrlTree, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { isPlatformBrowser } from '@angular/common';
 import { AuthService } from '../services/auth-service';
 
 @Injectable({ providedIn: 'root' })
@@ -9,13 +9,15 @@ export class AuthGuard implements CanActivate {
 
   constructor(
     @Inject(PLATFORM_ID) platformId: Object,
-    @Inject(DOCUMENT) private document: Document,
     private auth: AuthService,
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
   }
 
-  async canActivate(): Promise<boolean | UrlTree> {
+  async canActivate(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot,
+  ): Promise<boolean | UrlTree> {
     // SSR: always allow
     if (!this.isBrowser) {
       return true;
@@ -26,9 +28,8 @@ export class AuthGuard implements CanActivate {
       return true;
     }
 
-    // Redirect to auth server with current URL as state
-    const currentUrl = this.document.location.pathname + this.document.location.search;
-    await this.auth.login(currentUrl);
+    // Redirect to auth server with target URL as state
+    await this.auth.login(state.url);
     return false;
   }
 }
