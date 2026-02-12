@@ -313,7 +313,6 @@ describe('Devices API routes', () => {
   });
 });
 
-// Mock the auth middleware before importing apiRouter
 let mockUser: User = { authenticated: false };
 
 vi.mock('../middlewares/auth', () => ({
@@ -324,6 +323,7 @@ vi.mock('../middlewares/auth', () => ({
   }) as RequestHandler,
 }));
 
+// Mock with provided __mocks__ implementation
 vi.mock('../config/db');
 
 function setMockUser(user: User) {

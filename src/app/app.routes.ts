@@ -20,6 +20,22 @@ export const routes: Routes = [
     component: Admin,
     title: 'Admin',
     canActivate: [AuthGuard],
+    children: [
+      {
+        path: 'suggestions',
+        loadComponent: () =>
+          import('./pages/admin/suggestions/suggestions').then((m) => m.Suggestions),
+        title: 'Suggestions',
+      },
+      {
+        path: 'published-devices',
+        loadComponent: () =>
+          import('./pages/admin/published-devices/published-devices').then(
+            (m) => m.PublishedDevices,
+          ),
+        title: 'Published Devices',
+      },
+    ],
   },
   {
     path: 'auth/callback',

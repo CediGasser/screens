@@ -1,23 +1,27 @@
-import { Component, Signal } from '@angular/core';
-import { DevicesTable } from '../../features/devices-table/devices-table';
-import { Device, DevicesApi } from '../../services/devices-api';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Component } from '@angular/core';
+import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
   selector: 'app-admin',
-  imports: [DevicesTable],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive],
   template: `
     <section>
       <h1>Admin Dashboard</h1>
-      <app-devices-table [devices]="devices()" [enableOptions]="true"></app-devices-table>
+      <div class="split">
+        <nav>
+          <ul>
+            <li><a [routerLink]="['suggestions']" routerLinkActive="active">Suggestions</a></li>
+            <li>
+              <a [routerLink]="['published-devices']" routerLinkActive="active"
+                >Published Devices</a
+              >
+            </li>
+          </ul>
+        </nav>
+        <router-outlet></router-outlet>
+      </div>
     </section>
   `,
   styleUrl: './admin.css',
 })
-export class Admin {
-  protected devices: Signal<Device[]>;
-
-  constructor(private devicesApi: DevicesApi) {
-    this.devices = toSignal(this.devicesApi.getDevices(), { initialValue: [] });
-  }
-}
+export class Admin {}

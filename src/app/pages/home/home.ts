@@ -1,5 +1,5 @@
 import { Component, Signal, signal } from '@angular/core';
-import { DevicesTable } from "../../features/devices-table/devices-table";
+import { DevicesTable } from '../../features/devices-table/devices-table';
 import { Device, DevicesApi } from '../../services/devices-api';
 import { toSignal } from '@angular/core/rxjs-interop';
 
@@ -14,11 +14,10 @@ import { toSignal } from '@angular/core/rxjs-interop';
   `,
   styleUrl: './home.css',
 })
-
 export class Home {
   protected devices: Signal<Device[]>;
 
   constructor(private devicesApi: DevicesApi) {
-    this.devices = toSignal(this.devicesApi.getDevices(), { initialValue: [] });
+    this.devices = toSignal(this.devicesApi.getPublishedDevices(), { initialValue: [] });
   }
 }
