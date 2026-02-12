@@ -1,4 +1,4 @@
-import { Component, Signal, viewChild } from '@angular/core';
+import { Component, signal, Signal, viewChild } from '@angular/core';
 import { DevicesTable } from '../../features/devices-table/devices-table';
 import { Device, DevicesApi } from '../../services/devices-api';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -8,11 +8,11 @@ import { DeviceFormDialog } from '../../features/device-form-dialog/device-form-
   selector: 'app-home',
   imports: [DevicesTable, DeviceFormDialog],
   template: `
+    <header>
+      <h1>Devices</h1>
+      <button class="suggest-btn" (click)="openSuggestDialog()">Suggest a Device</button>
+    </header>
     <section>
-      <header class="page-header">
-        <h1>Devices</h1>
-        <button class="suggest-btn" (click)="openSuggestDialog()">Suggest a Device</button>
-      </header>
       <app-devices-table [devices]="devices()"></app-devices-table>
     </section>
 
@@ -21,6 +21,7 @@ import { DeviceFormDialog } from '../../features/device-form-dialog/device-form-
   styleUrl: './home.css',
 })
 export class Home {
+  protected title = signal('Device Catalog');
   protected devices: Signal<Device[]>;
   protected deviceFormDialog = viewChild.required<DeviceFormDialog>('deviceFormDialog');
 
