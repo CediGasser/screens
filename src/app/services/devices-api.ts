@@ -16,6 +16,8 @@ export interface Device {
   isDraft: boolean;
 }
 
+export type DeviceFormData = Omit<Device, 'id'>;
+
 /**
  * Service for interacting with the devices API.
  */
@@ -31,5 +33,17 @@ export class DevicesApi {
 
   getSuggestions(): Observable<Device[]> {
     return this.http.get<Device[]>('/api/devices', { params: { isDraft: 'true' } });
+  }
+
+  createDevice(device: DeviceFormData): Observable<Device> {
+    return this.http.post<Device>('/api/devices', device);
+  }
+
+  updateDevice(id: string, device: Partial<DeviceFormData>): Observable<Device> {
+    return this.http.put<Device>(`/api/devices/${id}`, device);
+  }
+
+  deleteDevice(id: string): Observable<void> {
+    return this.http.delete<void>(`/api/devices/${id}`);
   }
 }

@@ -1,3 +1,32 @@
 section {
   padding: 1rem;
 }
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.page-header h1 {
+  margin: 0;
+}
+
+.suggest-btn {
+  padding: 0.65rem 1.25rem;
+  border-radius: 2.75rem;
+  border: 0;
+  background: var(--red-to-pink-to-purple-horizontal-gradient);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 0.12s ease,
+    filter 0.12s ease;
+}
+
+.suggest-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(0.98);
+}

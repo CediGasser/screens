@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { Device } from '../../services/devices-api';
 import { DevicesTableRow } from './devices-table-row/devices-table-row';
 
@@ -24,7 +24,13 @@ import { DevicesTableRow } from './devices-table-row/devices-table-row';
       </thead>
       <tbody>
         @for (device of devices(); track device.id) {
-          <tr app-devices-table-row [device]="device" [enableOptions]="enableOptions()"></tr>
+          <tr
+            app-devices-table-row
+            [device]="device"
+            [enableOptions]="enableOptions()"
+            (editDevice)="editDevice.emit($event)"
+            (deleteDevice)="deleteDevice.emit($event)"
+          ></tr>
         }
       </tbody>
     </table>
@@ -34,4 +40,7 @@ import { DevicesTableRow } from './devices-table-row/devices-table-row';
 export class DevicesTable {
   devices = input.required<Device[]>();
   enableOptions = input<boolean>(false);
+
+  editDevice = output<Device>();
+  deleteDevice = output<Device>();
 }
