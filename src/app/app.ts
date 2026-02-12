@@ -10,7 +10,7 @@ import { AuthService } from './services/auth-service';
       <router-outlet />
     </main>
     <footer>
-      <p>&copy; 2024 Screens. All rights reserved.</p>
+      <p>Made by <a href="https://github.com/CediGasser">CediGasser</a></p>
       <a [routerLink]="['/admin/suggestions']">
         <span>Admin</span>
       </a>

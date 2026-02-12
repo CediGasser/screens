@@ -1,5 +1,4 @@
-import { Component, Signal, signal, viewChild } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Component, signal, viewChild } from '@angular/core';
 import { Device, DevicesApi } from '../../../services/devices-api';
 import { DevicesTable } from '../../../features/devices-table/devices-table';
 import { DeviceFormDialog } from '../../../features/device-form-dialog/device-form-dialog';
