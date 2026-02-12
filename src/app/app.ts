@@ -14,6 +14,9 @@ import { AuthService } from './services/auth-service';
       <a [routerLink]="['/admin/suggestions']">
         <span>Admin</span>
       </a>
+      @if (authService.isAuthenticated()) {
+        <button class="logout-btn" (click)="logout()">Logout</button>
+      }
     </footer>
   `,
   styleUrl: './app.css',

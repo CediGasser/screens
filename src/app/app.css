@@ -12,3 +12,10 @@ footer {
 main {
   padding-top: 8rem;
 }
+
+.logout-btn {
+  all: unset;
+  cursor: pointer;
+  text-decoration: underline;
+  color: var(--gray-700);
+}
