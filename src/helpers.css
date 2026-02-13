@@ -1,5 +1,5 @@
 @property --angle {
-  syntax: "<angle>";
+  syntax: '<angle>';
   initial-value: 0deg;
   inherits: true;
 }
@@ -12,25 +12,32 @@
 
 .gradient-border {
   padding: 0.5em 1.25em;
-  
+
   border: 5px solid transparent;
   background:
     linear-gradient(white) padding-box,
-    conic-gradient(from var(--angle), 
-      var(--bright-blue),
-      var(--electric-violet), 
-      var(--french-violet), 
-      var(--vivid-pink), 
-      var(--hot-red),
-      var(--orange-red),
-      var(--vivid-pink), 
-      var(--bright-blue)) 
+    conic-gradient(
+        from var(--angle),
+        var(--bright-blue),
+        var(--electric-violet),
+        var(--french-violet),
+        var(--vivid-pink),
+        var(--hot-red),
+        var(--orange-red),
+        var(--vivid-pink),
+        var(--bright-blue)
+      )
       border-box;
   animation: rotate 3s linear infinite;
   animation-play-state: paused;
 }
 
-.gradient-border.animated:hover,
-.gradient-border.animated:focus-visible {
+.gradient-border.animated {
+  animation-duration: 1s;
+  animation-play-state: running;
+}
+
+.gradient-border.animated-hover:hover,
+.gradient-border.animated-hover:focus-visible {
   animation-play-state: running;
 }

@@ -8,11 +8,6 @@ export const routes: Routes = [
     title: 'Screens',
   },
   {
-    path: 'login',
-    loadComponent: () => import('./pages/login/login').then((m) => m.Login),
-    title: 'Login',
-  },
-  {
     path: 'admin',
     loadComponent: () => import('./pages/admin/admin').then((m) => m.Admin),
     title: 'Admin',

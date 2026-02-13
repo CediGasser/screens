@@ -6,8 +6,10 @@ import { AuthService } from '../../../services/auth-service';
   selector: 'app-callback',
   template: `
     <section>
-      <h1>Logging in...</h1>
-      <p>Please wait while we log you in and redirect you to the app.</p>
+      <div class="gradient-border animated">
+        <h1>Logging in...</h1>
+        <p>Please wait while we log you in and redirect you to the app.</p>
+      </div>
     </section>
   `,
   styleUrl: './callback.css',
