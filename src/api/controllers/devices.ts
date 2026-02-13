@@ -1,12 +1,33 @@
-import { ObjectId, WithId } from 'mongodb';
+import { Filter, ObjectId, WithId } from 'mongodb';
 import { getDbConnection } from '../config/db';
 import { Device, DeviceDocument } from '../types';
-import { AppError, NotFoundError, WtfError } from '../errors';
+import { NotFoundError, WtfError } from '../errors';
+
+export interface DeviceQueryFilters {
+  isDraft?: boolean;
+  manufacturer?: string;
+  name?: string;
+  type?: Device['type'];
+  releaseDateFrom?: string;
+  releaseDateTo?: string;
+  screenPixelWidthMin?: number;
+  screenPixelWidthMax?: number;
+  screenPixelHeightMin?: number;
+  screenPixelHeightMax?: number;
+  pixelDensityMin?: number;
+  pixelDensityMax?: number;
+  screenCornerRadiusMin?: number;
+  screenCornerRadiusMax?: number;
+}
+
+export async function getDevices(filters: DeviceQueryFilters = {}): Promise<Device[]> {
+  const { devicesCollection } = await getDbConnection();
+  const docs = await devicesCollection.find(buildDeviceMongoFilter(filters)).toArray();
+  return docs.map(mapDocumentToDevice);
+}
 
 export async function getAllDevices() {
-  const { devicesCollection } = await getDbConnection();
-  const docs = await devicesCollection.find().toArray();
-  return docs.map(mapDocumentToDevice);
+  return getDevices();
 }
 
 export async function getDeviceById(id: string): Promise<Device> {
@@ -19,15 +40,11 @@ export async function getDeviceById(id: string): Promise<Device> {
 }
 
 export async function getPublishedDevices(): Promise<Device[]> {
-  const { devicesCollection } = await getDbConnection();
-  const docs = await devicesCollection.find({ isDraft: false }).toArray();
-  return docs.map(mapDocumentToDevice);
+  return getDevices({ isDraft: false });
 }
 
 export async function getDraftDevices(): Promise<Device[]> {
-  const { devicesCollection } = await getDbConnection();
-  const docs = await devicesCollection.find({ isDraft: true }).toArray();
-  return docs.map(mapDocumentToDevice);
+  return getDevices({ isDraft: true });
 }
 
 export async function createDevice(device: DeviceDocument): Promise<Device> {
@@ -74,4 +91,88 @@ function mapDocumentToDevice(doc: WithId<DeviceDocument>): Device {
     screenCornerRadius: doc.screenCornerRadius,
     isDraft: doc.isDraft,
   };
+}
+
+function buildDeviceMongoFilter(filters: DeviceQueryFilters): Filter<DeviceDocument> {
+  const query: Filter<DeviceDocument> = {};
+
+  if (typeof filters.isDraft === 'boolean') {
+    query.isDraft = filters.isDraft;
+  }
+
+  if (filters.manufacturer) {
+    query.manufacturer = new RegExp(`^${escapeRegex(filters.manufacturer)}$`, 'i');
+  }
+
+  if (filters.name) {
+    query.name = { $regex: escapeRegex(filters.name), $options: 'i' };
+  }
+
+  if (filters.type) {
+    query.type = filters.type;
+  }
+
+  if (filters.releaseDateFrom || filters.releaseDateTo) {
+    const range: { $gte?: string; $lte?: string } = {};
+    if (filters.releaseDateFrom) range.$gte = filters.releaseDateFrom;
+    if (filters.releaseDateTo) range.$lte = filters.releaseDateTo;
+    query.releaseDate = range;
+  }
+
+  applyNumberRangeFilter(
+    query,
+    'screenPixelWidth',
+    filters.screenPixelWidthMin,
+    filters.screenPixelWidthMax,
+  );
+  applyNumberRangeFilter(
+    query,
+    'screenPixelHeight',
+    filters.screenPixelHeightMin,
+    filters.screenPixelHeightMax,
+  );
+  applyNumberRangeFilter(
+    query,
+    'screenCornerRadius',
+    filters.screenCornerRadiusMin,
+    filters.screenCornerRadiusMax,
+  );
+
+  const pixelDensityExpr: Record<string, unknown>[] = [];
+  if (filters.pixelDensityMin != null) {
+    pixelDensityExpr.push({
+      $gte: [{ $divide: ['$screenPixelWidth', '$screenSize'] }, filters.pixelDensityMin],
+    });
+  }
+  if (filters.pixelDensityMax != null) {
+    pixelDensityExpr.push({
+      $lte: [{ $divide: ['$screenPixelWidth', '$screenSize'] }, filters.pixelDensityMax],
+    });
+  }
+
+  if (pixelDensityExpr.length === 1) {
+    (query as Filter<DeviceDocument> & { $expr?: unknown }).$expr = pixelDensityExpr[0];
+  } else if (pixelDensityExpr.length > 1) {
+    (query as Filter<DeviceDocument> & { $expr?: unknown }).$expr = { $and: pixelDensityExpr };
+  }
+
+  return query;
+}
+
+function applyNumberRangeFilter(
+  query: Filter<DeviceDocument>,
+  field: 'screenPixelWidth' | 'screenPixelHeight' | 'screenCornerRadius',
+  min?: number,
+  max?: number,
+) {
+  const range: { $gte?: number; $lte?: number } = {};
+  if (min != null) range.$gte = min;
+  if (max != null) range.$lte = max;
+  if (Object.keys(range).length > 0) {
+    (query as Record<string, unknown>)[field] = range;
+  }
+}
+
+function escapeRegex(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }

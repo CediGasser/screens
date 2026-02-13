@@ -229,6 +229,53 @@ describe('Devices API routes', () => {
       expect(response.status).toBe(200);
       expect(response.body.length).toBe(0);
     });
+
+    it('should filter by manufacturer (exact, case-insensitive) and name (substring)', async () => {
+      setAuthenticated();
+      const { id: _id1, ...device1 } = MOCK_DEVICES[0];
+      const { id: _id2, ...device2 } = MOCK_DEVICES[1];
+
+      await request(app).post('/api/devices').send(device1);
+      await request(app).post('/api/devices').send(device2);
+
+      const response = await request(app).get('/api/devices?manufacturer=apple&name=phone');
+      expect(response.status).toBe(200);
+      expect(response.body.length).toBeGreaterThan(0);
+      expect(
+        response.body.every(
+          (d: { manufacturer: string; name: string }) =>
+            d.manufacturer.toLowerCase() === 'apple' && d.name.toLowerCase().includes('phone'),
+        ),
+      ).toBe(true);
+    });
+
+    it('should filter by width, height and corner radius ranges', async () => {
+      setAuthenticated();
+      const { id: _id1, ...device1 } = MOCK_DEVICES[1];
+      const { id: _id2, ...device2 } = MOCK_DEVICES[3];
+
+      await request(app).post('/api/devices').send(device1);
+      await request(app).post('/api/devices').send(device2);
+
+      const response = await request(app).get(
+        '/api/devices?screenPixelWidthMin=1400&screenPixelWidthMax=2000&screenPixelHeightMin=2800&screenCornerRadiusMax=15',
+      );
+      expect(response.status).toBe(200);
+      expect(response.body.length).toBeGreaterThan(0);
+      expect(
+        response.body.every(
+          (d: {
+            screenPixelWidth: number;
+            screenPixelHeight: number;
+            screenCornerRadius: number;
+          }) =>
+            d.screenPixelWidth >= 1400 &&
+            d.screenPixelWidth <= 2000 &&
+            d.screenPixelHeight >= 2800 &&
+            d.screenCornerRadius <= 15,
+        ),
+      ).toBe(true);
+    });
   });
 
   describe('Authorization tests', () => {

@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { DeviceFilters, deviceFiltersToQueryParams } from './device-filters';
 
 export interface Device {
   id: string;
@@ -27,12 +28,22 @@ export type DeviceFormData = Omit<Device, 'id'>;
 export class DevicesApi {
   constructor(private http: HttpClient) {}
 
-  getPublishedDevices(): Observable<Device[]> {
-    return this.http.get<Device[]>('/api/devices', { params: { isDraft: 'false' } });
+  getPublishedDevices(filters: DeviceFilters = {}): Observable<Device[]> {
+    return this.http.get<Device[]>('/api/devices', {
+      params: {
+        ...deviceFiltersToQueryParams(filters),
+        isDraft: 'false',
+      },
+    });
   }
 
-  getSuggestions(): Observable<Device[]> {
-    return this.http.get<Device[]>('/api/devices', { params: { isDraft: 'true' } });
+  getSuggestions(filters: DeviceFilters = {}): Observable<Device[]> {
+    return this.http.get<Device[]>('/api/devices', {
+      params: {
+        ...deviceFiltersToQueryParams(filters),
+        isDraft: 'true',
+      },
+    });
   }
 
   createDevice(device: DeviceFormData): Observable<Device> {

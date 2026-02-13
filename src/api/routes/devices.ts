@@ -7,23 +7,19 @@ export const devicesRouter = Router();
 
 devicesRouter.get('/', async (req, res) => {
   const isAuthenticated = req.user.authenticated;
-  const isDraftFilter = req.query['isDraft'];
+  const queryFilters = parseDeviceQueryFilters(req.query);
 
-  let filteredDevices;
-
-  if (isDraftFilter === 'true') {
-    // Only authenticated users can access drafts
-    filteredDevices = isAuthenticated ? await devices.getDraftDevices() : [];
-  } else if (isDraftFilter === 'false') {
-    filteredDevices = await devices.getPublishedDevices();
-  } else {
-    // No filter: authenticated users see all, others see only published
-    filteredDevices = isAuthenticated
-      ? await devices.getAllDevices()
-      : await devices.getPublishedDevices();
+  if (queryFilters.isDraft === true && !isAuthenticated) {
+    return res.json([]);
   }
 
-  res.json(filteredDevices);
+  if (queryFilters.isDraft == null && !isAuthenticated) {
+    queryFilters.isDraft = false;
+  }
+
+  const filteredDevices = await devices.getDevices(queryFilters);
+
+  return res.json(filteredDevices);
 });
 
 devicesRouter.get('/:id', async (req, res) => {
@@ -71,3 +67,56 @@ devicesRouter.delete('/:id', async (req, res) => {
   await devices.deleteDevice(req.params.id);
   return res.status(204).send();
 });
+
+function parseDeviceQueryFilters(query: Record<string, unknown>): devices.DeviceQueryFilters {
+  const type = readStringQuery(query['type']);
+  return {
+    isDraft: parseBooleanQuery(query['isDraft']),
+    manufacturer: readStringQuery(query['manufacturer']),
+    name: readStringQuery(query['name']),
+    type: isDeviceType(type) ? type : undefined,
+    releaseDateFrom: readStringQuery(query['releaseDateFrom']),
+    releaseDateTo: readStringQuery(query['releaseDateTo']),
+    screenPixelWidthMin: parseNumberQuery(query['screenPixelWidthMin']),
+    screenPixelWidthMax: parseNumberQuery(query['screenPixelWidthMax']),
+    screenPixelHeightMin: parseNumberQuery(query['screenPixelHeightMin']),
+    screenPixelHeightMax: parseNumberQuery(query['screenPixelHeightMax']),
+    pixelDensityMin: parseNumberQuery(query['pixelDensityMin']),
+    pixelDensityMax: parseNumberQuery(query['pixelDensityMax']),
+    screenCornerRadiusMin: parseNumberQuery(query['screenCornerRadiusMin']),
+    screenCornerRadiusMax: parseNumberQuery(query['screenCornerRadiusMax']),
+  };
+}
+
+function readStringQuery(value: unknown): string | undefined {
+  if (typeof value === 'string' && value.trim() !== '') return value.trim();
+  if (Array.isArray(value) && typeof value[0] === 'string' && value[0].trim() !== '') {
+    return value[0].trim();
+  }
+  return undefined;
+}
+
+function parseBooleanQuery(value: unknown): boolean | undefined {
+  const text = readStringQuery(value);
+  if (text === 'true') return true;
+  if (text === 'false') return false;
+  return undefined;
+}
+
+function parseNumberQuery(value: unknown): number | undefined {
+  const text = readStringQuery(value);
+  if (text == null) return undefined;
+  const parsed = Number(text);
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
+
+function isDeviceType(value: unknown): value is Device['type'] {
+  return (
+    value === 'smartphone' ||
+    value === 'tablet' ||
+    value === 'laptop' ||
+    value === 'desktop' ||
+    value === 'wearable' ||
+    value === 'other'
+  );
+}

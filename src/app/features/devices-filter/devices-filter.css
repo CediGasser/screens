@@ -1,0 +1,20 @@
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-m);
+  padding: var(--space-m);
+  border: var(--fieldBorderWidth) solid var(--c-border);
+  border-radius: var(--radius);
+  margin-bottom: var(--space-l);
+}
+
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-m);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+}

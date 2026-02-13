@@ -89,7 +89,7 @@
 
   /* Layer */
   --radius: 0.75rem;
-  --fieldBorderWidth: 3px;
+  --fieldBorderWidth: 1px;
 
   font-family:
     'Roboto Mono',
