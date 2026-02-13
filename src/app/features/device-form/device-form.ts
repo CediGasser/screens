@@ -22,62 +22,50 @@ export const DEVICE_TYPES: DeviceType[] = [
     <form (submit)="onSubmit($event)">
       <div class="form-row">
         <div class="form-group">
-          <label for="manufacturer"
-            >Manufacturer
-            <input id="manufacturer" [formField]="deviceForm.manufacturer" />
-          </label>
+          <label for="manufacturer">Manufacturer </label>
+          <input id="manufacturer" [formField]="deviceForm.manufacturer" />
           <app-form-field-error [fieldState]="deviceForm.manufacturer()"></app-form-field-error>
         </div>
 
         <div class="form-group">
-          <label for="name"
-            >Device Name
-            <input id="name" [formField]="deviceForm.name" />
-          </label>
+          <label for="name">Device Name </label>
+          <input id="name" [formField]="deviceForm.name" />
           <app-form-field-error [fieldState]="deviceForm.name()"></app-form-field-error>
         </div>
       </div>
 
       <div class="form-row">
         <div class="form-group">
-          <label for="type"
-            >Type
-            <select id="type" [formField]="deviceForm.type">
-              @for (type of deviceTypes; track type) {
-                <option [value]="type">{{ type | titlecase }}</option>
-              }
-            </select>
-          </label>
+          <label for="type">Type </label>
+          <select id="type" [formField]="deviceForm.type">
+            @for (type of deviceTypes; track type) {
+              <option [value]="type">{{ type | titlecase }}</option>
+            }
+          </select>
           <app-form-field-error [fieldState]="deviceForm.type()"></app-form-field-error>
         </div>
 
         <div class="form-group">
-          <label for="releaseDate"
-            >Release Date
-            <input id="releaseDate" type="date" [formField]="deviceForm.releaseDate" />
-          </label>
+          <label for="releaseDate">Release Date </label>
+          <input id="releaseDate" type="date" [formField]="deviceForm.releaseDate" />
           <app-form-field-error [fieldState]="deviceForm.releaseDate()"></app-form-field-error>
         </div>
       </div>
 
       <div class="form-row">
         <div class="form-group">
-          <label for="screenSize"
-            >Screen Size (mm)
-            <input id="screenSize" type="number" step="0.1" [formField]="deviceForm.screenSize" />
-          </label>
+          <label for="screenSize">Screen Size (mm) </label>
+          <input id="screenSize" type="number" step="0.1" [formField]="deviceForm.screenSize" />
           <app-form-field-error [fieldState]="deviceForm.screenSize()"></app-form-field-error>
         </div>
 
         <div class="form-group">
-          <label for="screenCornerRadius"
-            >Corner Radius (px)
-            <input
-              id="screenCornerRadius"
-              type="number"
-              [formField]="deviceForm.screenCornerRadius"
-            />
-          </label>
+          <label for="screenCornerRadius">Corner Radius (px) </label>
+          <input
+            id="screenCornerRadius"
+            type="number"
+            [formField]="deviceForm.screenCornerRadius"
+          />
           <app-form-field-error
             [fieldState]="deviceForm.screenCornerRadius()"
           ></app-form-field-error>
@@ -86,22 +74,14 @@ export const DEVICE_TYPES: DeviceType[] = [
 
       <div class="form-row">
         <div class="form-group">
-          <label for="screenPixelWidth"
-            >Screen Width (px)
-            <input id="screenPixelWidth" type="number" [formField]="deviceForm.screenPixelWidth" />
-          </label>
+          <label for="screenPixelWidth">Screen Width (px) </label>
+          <input id="screenPixelWidth" type="number" [formField]="deviceForm.screenPixelWidth" />
           <app-form-field-error [fieldState]="deviceForm.screenPixelWidth()"></app-form-field-error>
         </div>
 
         <div class="form-group">
-          <label for="screenPixelHeight"
-            >Screen Height (px)
-            <input
-              id="screenPixelHeight"
-              type="number"
-              [formField]="deviceForm.screenPixelHeight"
-            />
-          </label>
+          <label for="screenPixelHeight">Screen Height (px) </label>
+          <input id="screenPixelHeight" type="number" [formField]="deviceForm.screenPixelHeight" />
           <app-form-field-error
             [fieldState]="deviceForm.screenPixelHeight()"
           ></app-form-field-error>
@@ -110,7 +90,7 @@ export const DEVICE_TYPES: DeviceType[] = [
 
       <div class="form-actions">
         <button type="button" class="btn-secondary" (click)="onCancelClick()">Cancel</button>
-        <button type="submit" [disabled]="deviceForm().invalid()">
+        <button type="submit" class="primary" [disabled]="deviceForm().invalid()">
           {{ mode() === 'create' ? 'Submit' : 'Save Changes' }}
         </button>
       </div>

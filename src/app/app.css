@@ -5,17 +5,18 @@ footer {
   align-items: center;
   gap: 1rem;
   padding: 1rem;
-  color: var(--gray-700);
-  font-size: 0.875rem;
+  color: var(--c-bodyDimmed);
+  font-size: var(--text-s);
 }
 
-main {
-  padding-top: 8rem;
+div {
+  padding-top: var(--space-4xl);
+  min-height: 100dvh;
 }
 
 .logout-btn {
   all: unset;
   cursor: pointer;
   text-decoration: underline;
-  color: var(--gray-700);
+  color: var(--c-bodyDimmed);
 }

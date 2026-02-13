@@ -6,9 +6,9 @@ import { AuthService } from './services/auth-service';
   selector: 'app-root',
   imports: [RouterOutlet, RouterLink],
   template: `
-    <main>
+    <div>
       <router-outlet />
-    </main>
+    </div>
     <footer>
       <p>Made by <a href="https://github.com/CediGasser">CediGasser</a></p>
       <a [routerLink]="['/admin/suggestions']">

@@ -1,0 +1,143 @@
+/* Overrides for PrimeNG table styles */
+.p-datatable {
+  font-family: inherit;
+  font-size: var(--text-s);
+  color: var(--c-body);
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: var(--fieldBorderWidth) solid var(--c-border);
+  background-color: var(--c-overlay);
+}
+
+/* Header styles */
+.p-datatable-thead > tr > th {
+  color: var(--c-body);
+  padding: var(--space-s) var(--space-m);
+  font-weight: 600;
+  text-align: left;
+  border: none;
+  white-space: nowrap;
+  border-radius: var(--radius);
+}
+
+.p-datatable-sortable-column {
+  cursor: pointer;
+  transition: background-color 150ms ease;
+
+  &:hover {
+    background-color: hsl(var(--accentH), var(--accentS), calc(var(--accentL) - 5%));
+
+    & p-sorticon {
+      color: var(--c-body);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--c-accentContrasted);
+    outline-offset: -2px;
+  }
+}
+
+p-sorticon {
+  margin-left: var(--space-s);
+  color: var(--c-bodyDimmed);
+}
+
+/* Body styles */
+.p-datatable-tbody > tr {
+  background-color: var(--c-background);
+  transition: background-color 150ms ease;
+}
+
+.p-datatable-tbody > tr > td {
+  padding: var(--space-s) var(--space-m);
+  border-bottom: 1px solid var(--c-grey2);
+  color: var(--c-body);
+}
+
+.p-datatable-tbody > tr:last-child > td {
+  border-bottom: none;
+}
+
+.p-datatable-tbody > tr:hover {
+  background-color: var(--c-overlay);
+}
+
+/* Striped rows (if enabled) */
+.p-datatable-striped .p-datatable-tbody > tr:nth-child(even) {
+  background-color: var(--c-grey1);
+}
+
+.p-datatable-striped .p-datatable-tbody > tr:nth-child(even):hover {
+  background-color: var(--c-overlay);
+}
+
+/* Selection styles */
+.p-datatable-tbody > tr.p-highlight {
+  background-color: var(--c-accentContrasted);
+}
+
+.p-datatable-tbody > tr.p-highlight:hover {
+  background-color: var(--c-accentContrasted);
+}
+
+/* Checkbox styles */
+.p-checkbox {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.p-checkbox-box {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: var(--fieldBorderWidth) solid var(--c-fieldBorder);
+  border-radius: calc(var(--radius) / 2);
+  background-color: var(--c-background);
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease;
+}
+
+.p-checkbox-box:hover {
+  border-color: var(--c-accent);
+}
+
+.p-checkbox-box.p-highlight {
+  background-color: var(--c-accent);
+  border-color: var(--c-accent);
+}
+
+.p-checkbox-icon {
+  color: var(--c-accentContrasted);
+}
+
+/* Loading overlay */
+.p-datatable-loading-overlay {
+  background-color: var(--c-overlay);
+  backdrop-filter: blur(2px);
+}
+
+.p-datatable-loading-icon {
+  color: var(--c-accent);
+  width: 2rem;
+  height: 2rem;
+}
+
+/* Empty message */
+.p-datatable-emptymessage > td {
+  text-align: center;
+  padding: var(--space-xl) var(--space-m);
+  color: var(--c-bodyDimmed);
+  font-style: italic;
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+  .p-datatable-tbody > tr > td {
+    border-bottom-color: var(--c-grey6);
+  }
+
+  .p-datatable-striped .p-datatable-tbody > tr:nth-child(even) {
+    background-color: var(--c-grey7);
+  }
+}

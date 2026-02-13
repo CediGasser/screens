@@ -1,3 +1,21 @@
+.letter-box {
+  display: grid;
+  grid-template-columns: 1fr min(1000px, 100%) 1fr;
+  grid-template-rows: auto 1fr;
+  min-height: 100vh;
+  padding: 1rem;
+  align-items: start;
+}
+
+.letter-box > * {
+  grid-column: 2;
+}
+
+.full-bleed {
+  width: 100%;
+  grid-column: 1 / -1;
+}
+
 @property --angle {
   syntax: '<angle>';
   initial-value: 0deg;
@@ -11,6 +29,13 @@
 }
 
 .gradient-border {
+  --bright-blue: oklch(51.01% 0.274 263.83);
+  --electric-violet: oklch(53.18% 0.28 296.97);
+  --french-violet: oklch(47.66% 0.246 305.88);
+  --vivid-pink: oklch(69.02% 0.277 332.77);
+  --hot-red: oklch(61.42% 0.238 15.34);
+  --orange-red: oklch(63.32% 0.24 31.68);
+
   padding: 0.5em 1.25em;
 
   border: 5px solid transparent;

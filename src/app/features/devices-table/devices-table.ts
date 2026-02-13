@@ -19,6 +19,7 @@ import { SortEvent } from 'primeng/api';
       [customSort]="true"
       (sortFunction)="customSort($event)"
       [(selection)]="internalSelection"
+      stripedRows="true"
     >
       <ng-template #header>
         <tr>

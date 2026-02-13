@@ -8,15 +8,17 @@ import { DeviceFormDialog } from '../../features/device-form-dialog/device-form-
   selector: 'app-home',
   imports: [DevicesTable, DeviceFormDialog],
   template: `
-    <header>
-      <h1>Devices</h1>
-      <button class="suggest-btn" (click)="openSuggestDialog()">Suggest a Device</button>
-    </header>
-    <section>
-      <app-devices-table [devices]="devices()"></app-devices-table>
-    </section>
+    <main class="letter-box">
+      <header>
+        <h1>Devices</h1>
+        <button class="primary" (click)="openSuggestDialog()">Suggest a Device</button>
+      </header>
+      <section>
+        <app-devices-table [devices]="devices()"></app-devices-table>
+      </section>
 
-    <app-device-form-dialog #deviceFormDialog (deviceCreated)="onDeviceCreated($event)" />
+      <app-device-form-dialog #deviceFormDialog (deviceCreated)="onDeviceCreated($event)" />
+    </main>
   `,
   styleUrl: './home.css',
 })

@@ -1,5 +1,5 @@
 .error-message {
-  color: var(--hot-red);
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
+  color: var(--c-error);
+  font-size: var(--text-xs);
+  margin-top: var(--space-s);
 }

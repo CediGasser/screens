@@ -9,17 +9,15 @@ export type DialogMode = 'create' | 'edit';
   imports: [DeviceForm],
   template: `
     <dialog #dialog (close)="onDialogClose()">
-      <div class="dialog-content">
-        <header>
-          <h2>{{ mode() === 'create' ? 'Suggest a Device' : 'Edit Device' }}</h2>
-        </header>
-        <app-device-form
-          [device]="deviceToEdit()"
-          [mode]="mode()"
-          (formSubmit)="onFormSubmit($event)"
-          (cancel)="close()"
-        />
-      </div>
+      <header>
+        <h2>{{ mode() === 'create' ? 'Suggest a Device' : 'Edit Device' }}</h2>
+      </header>
+      <app-device-form
+        [device]="deviceToEdit()"
+        [mode]="mode()"
+        (formSubmit)="onFormSubmit($event)"
+        (cancel)="close()"
+      />
     </dialog>
   `,
   styleUrl: './device-form-dialog.css',

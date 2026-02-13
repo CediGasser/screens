@@ -5,7 +5,7 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
   selector: 'app-admin',
   imports: [RouterOutlet, RouterLink, RouterLinkActive],
   template: `
-    <section>
+    <main>
       <a [routerLink]="['/']" class="back-link"> <span>&larr;</span> Back to Home </a>
       <h1>Admin Dashboard</h1>
       <nav>
@@ -19,7 +19,7 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
       <div class="content">
         <router-outlet></router-outlet>
       </div>
-    </section>
+    </main>
   `,
   styleUrl: './admin.css',
 })

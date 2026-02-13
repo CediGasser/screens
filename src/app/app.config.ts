@@ -16,6 +16,12 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(withEventReplay()),
     provideOAuthClient(),
     provideAppConfig(),
-    providePrimeNG(),
+    providePrimeNG({
+      theme: {
+        options: {
+          cssLayer: 'primeng',
+        },
+      },
+    }),
   ],
 };
