@@ -20,6 +20,7 @@ import { combineLatest, debounceTime, map, switchMap } from 'rxjs';
     <app-devices-filter [filters]="filters()" (filtersChange)="onFiltersChange($event)" />
     <app-devices-table [devices]="devices()">
       <ng-template #actions let-device>
+        <button (click)="onApproveDevice(device)">Approve</button>
         <button (click)="onEditDevice(device)">Edit</button>
         <button (click)="onDeleteDevice(device)">Delete</button>
       </ng-template>
@@ -59,6 +60,13 @@ export class Suggestions {
       relativeTo: this.route,
       queryParams: deviceFiltersToQueryParams(filters),
       replaceUrl: true,
+    });
+  }
+
+  onApproveDevice(device: Device) {
+    this.devicesApi.updateDevice(device.id, { isDraft: false }).subscribe({
+      next: () => this.refreshTick.update((value) => value + 1),
+      error: (err) => console.error('Failed to approve device:', err),
     });
   }
 
