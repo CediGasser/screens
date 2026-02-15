@@ -32,7 +32,9 @@ export class AuthService {
       createAuthConfig(config.oauth.issuer, config.oauth.clientId, origin),
     );
     this.discoveryDone = this.oauthService.loadDiscoveryDocument().then(() => {});
-    this.loginDone = this.discoveryDone.then(() => this.oauthService.tryLoginCodeFlow());
+    this.loginDone = this.discoveryDone
+      .then(() => this.oauthService.tryLoginCodeFlow())
+      .then(() => this.oauthService.setupAutomaticSilentRefresh());
   }
 
   async login(state?: string): Promise<void> {

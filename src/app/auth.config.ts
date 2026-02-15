@@ -6,9 +6,8 @@ export function createAuthConfig(issuer: string, clientId: string, origin: strin
     clientId: clientId,
     redirectUri: origin + '/auth/callback',
     responseType: 'code',
-    scope: 'openid profile email',
-    showDebugInformation: true,
-    useSilentRefresh: true,
+    scope: 'openid profile email offline_access',
+    showDebugInformation: false,
     silentRefreshRedirectUri: origin + '/silent-refresh.html',
     strictDiscoveryDocumentValidation: false,
   };
