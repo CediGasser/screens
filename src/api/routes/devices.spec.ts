@@ -545,8 +545,8 @@ function setAuthenticated() {
     authenticated: true,
     sub: 'test-user-id',
     email: 'test@example.com',
-    roles: [],
-    claims: { sub: 'test-user-id' },
+    username: 'testuser',
+    groups: [],
   });
 }
 

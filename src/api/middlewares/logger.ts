@@ -1,6 +1,8 @@
 import type { Handler } from 'express';
 
-export const logger: Handler = (req, _res, next) => {
-  console.log(`[Logger Middleware] ${req.method} ${req.url}`);
-  next();
-};
+export const createLogger =
+  (prefix: string): Handler =>
+  (req, _res, next) => {
+    console.log(`[${prefix}] ${req.method} ${req.url}`);
+    next();
+  };

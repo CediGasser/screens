@@ -5,8 +5,8 @@ export interface AuthenticatedUser {
   authenticated: true;
   sub: string;
   email?: string;
-  roles: string[];
-  claims: JwtPayload;
+  username?: string;
+  groups: string[];
 }
 
 export interface UnauthenticatedUser {
@@ -89,17 +89,14 @@ export const authMiddleware: RequestHandler = (req, _res, next) => {
       algorithms: ['RS256'],
     }) as JwtPayload;
 
-    // Extract roles from common claim locations
-    const realmAccess = decoded['realm_access'] as { roles?: string[] } | undefined;
-    const roles: string[] =
-      decoded['roles'] ?? realmAccess?.roles ?? decoded['https://example.com/roles'] ?? [];
+    const groupsClaim = decoded['groups'] || [];
 
     req.user = {
       authenticated: true,
       sub: decoded.sub ?? '',
       email: decoded['email'] as string | undefined,
-      roles: Array.isArray(roles) ? roles : [],
-      claims: decoded,
+      username: decoded['preferred_username'] as string | undefined,
+      groups: Array.isArray(groupsClaim) ? groupsClaim : [],
     };
   } catch (err) {
     // Invalid token - treat as unauthenticated

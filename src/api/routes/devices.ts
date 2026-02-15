@@ -48,6 +48,9 @@ devicesRouter.post('/', async (req, res) => {
     throw new UnauthorizedError('Cannot create published device');
   }
   const createdDevice = await devices.createDevice(validatedCreateBody);
+  if (isAuthenticated) {
+    logAdminAction(`${req.user.username} created a new device: ${createdDevice.name}`);
+  }
   return res.status(201).json(createdDevice);
 });
 
@@ -60,6 +63,11 @@ devicesRouter.put('/:id', async (req, res) => {
   const validatedUpdateBody: Partial<DeviceDocument> = req.body; // TODO: Add validation logic here
 
   const updatedDevice = await devices.updateDevice(req.params.id, validatedUpdateBody);
+  if (!updatedDevice) {
+    throw new NotFoundError('Device');
+  }
+
+  logAdminAction(`${req.user.username} updated device ${req.params.id}`);
   return res.status(200).json(updatedDevice);
 });
 
@@ -71,6 +79,7 @@ devicesRouter.delete('/:id', async (req, res) => {
   }
 
   await devices.deleteDevice(req.params.id);
+  logAdminAction(`${req.user.username} deleted device ${req.params.id}`);
   return res.status(204).send();
 });
 
@@ -127,4 +136,8 @@ function isDeviceType(value: unknown): value is Device['type'] {
     value === 'wearable' ||
     value === 'other'
   );
+}
+
+function logAdminAction(text: string) {
+  console.log(`[Admin Action] ${text}`);
 }
