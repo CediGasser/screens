@@ -8,7 +8,6 @@ export function createAuthConfig(issuer: string, clientId: string, origin: strin
     responseType: 'code',
     scope: 'openid profile email offline_access',
     showDebugInformation: false,
-    silentRefreshRedirectUri: origin + '/silent-refresh.html',
     strictDiscoveryDocumentValidation: false,
   };
 }
