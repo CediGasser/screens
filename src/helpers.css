@@ -40,7 +40,7 @@
 
   border: 5px solid transparent;
   background:
-    linear-gradient(white) padding-box,
+    linear-gradient(var(--c-background)) padding-box,
     conic-gradient(
         from var(--angle),
         var(--bright-blue),

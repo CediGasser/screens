@@ -2,28 +2,85 @@ import { Filter, ObjectId, WithId } from 'mongodb';
 import { getDbConnection } from '../config/db';
 import { Device, DeviceDocument } from '../types';
 import { NotFoundError, WtfError } from '../errors';
-
-export interface DeviceQueryFilters {
-  isDraft?: boolean;
-  manufacturer?: string;
-  name?: string;
-  type?: Device['type'];
-  releaseDateFrom?: string;
-  releaseDateTo?: string;
-  screenPixelWidthMin?: number;
-  screenPixelWidthMax?: number;
-  screenPixelHeightMin?: number;
-  screenPixelHeightMax?: number;
-  pixelDensityMin?: number;
-  pixelDensityMax?: number;
-  screenCornerRadiusMin?: number;
-  screenCornerRadiusMax?: number;
-}
+import type { DeviceQueryFilters, DeviceMetadata } from '../types';
 
 export async function getDevices(filters: DeviceQueryFilters = {}): Promise<Device[]> {
   const { devicesCollection } = await getDbConnection();
   const docs = await devicesCollection.find(buildDeviceMongoFilter(filters)).toArray();
   return docs.map(mapDocumentToDevice);
+}
+
+export async function getDevicesMetadata(includeDrafts: boolean): Promise<DeviceMetadata> {
+  const { devicesCollection } = await getDbConnection();
+  const baseMatch = includeDrafts ? {} : { isDraft: false };
+
+  const [boundaryDoc, manufacturers, totalDevices, draftDevices, publishedDevices] =
+    await Promise.all([
+      devicesCollection
+        .aggregate<{
+          minReleaseDate: string | null;
+          maxReleaseDate: string | null;
+          minScreenSize: number | null;
+          maxScreenSize: number | null;
+          minScreenPixelWidth: number | null;
+          maxScreenPixelWidth: number | null;
+          minScreenPixelHeight: number | null;
+          maxScreenPixelHeight: number | null;
+          minPixelDensity: number | null;
+          maxPixelDensity: number | null;
+          minScreenCornerRadius: number | null;
+          maxScreenCornerRadius: number | null;
+        }>([
+          { $match: baseMatch },
+          {
+            $group: {
+              _id: null,
+              minReleaseDate: { $min: '$releaseDate' },
+              maxReleaseDate: { $max: '$releaseDate' },
+              minScreenSize: { $min: '$screenSize' },
+              maxScreenSize: { $max: '$screenSize' },
+              minScreenPixelWidth: { $min: '$screenPixelWidth' },
+              maxScreenPixelWidth: { $max: '$screenPixelWidth' },
+              minScreenPixelHeight: { $min: '$screenPixelHeight' },
+              maxScreenPixelHeight: { $max: '$screenPixelHeight' },
+              minPixelDensity: { $min: { $divide: ['$screenPixelWidth', '$screenSize'] } },
+              maxPixelDensity: { $max: { $divide: ['$screenPixelWidth', '$screenSize'] } },
+              minScreenCornerRadius: { $min: '$screenCornerRadius' },
+              maxScreenCornerRadius: { $max: '$screenCornerRadius' },
+            },
+          },
+        ])
+        .next(),
+      devicesCollection.distinct('manufacturer', baseMatch),
+      devicesCollection.countDocuments(baseMatch),
+      includeDrafts ? devicesCollection.countDocuments({ isDraft: true }) : Promise.resolve(0),
+      includeDrafts
+        ? devicesCollection.countDocuments({ isDraft: false })
+        : devicesCollection.countDocuments(baseMatch),
+    ]);
+
+  return {
+    boundaries: {
+      minReleaseDate: boundaryDoc?.minReleaseDate ?? null,
+      maxReleaseDate: boundaryDoc?.maxReleaseDate ?? null,
+      minScreenSize: boundaryDoc?.minScreenSize ?? null,
+      maxScreenSize: boundaryDoc?.maxScreenSize ?? null,
+      minScreenPixelWidth: boundaryDoc?.minScreenPixelWidth ?? null,
+      maxScreenPixelWidth: boundaryDoc?.maxScreenPixelWidth ?? null,
+      minScreenPixelHeight: boundaryDoc?.minScreenPixelHeight ?? null,
+      maxScreenPixelHeight: boundaryDoc?.maxScreenPixelHeight ?? null,
+      minPixelDensity: boundaryDoc?.minPixelDensity ?? null,
+      maxPixelDensity: boundaryDoc?.maxPixelDensity ?? null,
+      minScreenCornerRadius: boundaryDoc?.minScreenCornerRadius ?? null,
+      maxScreenCornerRadius: boundaryDoc?.maxScreenCornerRadius ?? null,
+    },
+    manufacturers: manufacturers.sort((a, b) => a.localeCompare(b)),
+    counts: {
+      totalDevices,
+      draftDevices,
+      publishedDevices,
+    },
+  };
 }
 
 export async function getAllDevices() {

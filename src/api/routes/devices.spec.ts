@@ -278,6 +278,136 @@ describe('Devices API routes', () => {
     });
   });
 
+  describe('Metadata tests', () => {
+    it('should return counts, boundaries and manufacturer list for authenticated users', async () => {
+      setAuthenticated();
+
+      const beforeResponse = await request(app).get('/api/devices/meta');
+      expect(beforeResponse.status).toBe(200);
+
+      const publishedMetaDevice = {
+        manufacturer: 'Meta-Published-Co',
+        name: 'Meta Published Device',
+        type: 'desktop' as const,
+        releaseDate: '2030-01-01',
+        screenSize: 100,
+        screenPixelHeight: 5000,
+        screenPixelWidth: 3000,
+        screenCornerRadius: 2,
+        isDraft: false,
+      };
+
+      const draftMetaDevice = {
+        manufacturer: 'Meta-Draft-Co',
+        name: 'Meta Draft Device',
+        type: 'tablet' as const,
+        releaseDate: '2010-01-01',
+        screenSize: 200,
+        screenPixelHeight: 1000,
+        screenPixelWidth: 600,
+        screenCornerRadius: 40,
+        isDraft: true,
+      };
+
+      await request(app).post('/api/devices').send(publishedMetaDevice);
+      await request(app).post('/api/devices').send(draftMetaDevice);
+
+      const afterResponse = await request(app).get('/api/devices/meta');
+      expect(afterResponse.status).toBe(200);
+
+      const beforeCounts = beforeResponse.body.counts as {
+        totalDevices: number;
+        draftDevices: number;
+        publishedDevices: number;
+      };
+      const afterCounts = afterResponse.body.counts as {
+        totalDevices: number;
+        draftDevices: number;
+        publishedDevices: number;
+      };
+
+      expect(afterCounts.totalDevices).toBe(beforeCounts.totalDevices + 2);
+      expect(afterCounts.draftDevices).toBe(beforeCounts.draftDevices + 1);
+      expect(afterCounts.publishedDevices).toBe(beforeCounts.publishedDevices + 1);
+
+      const manufacturers = afterResponse.body.manufacturers as string[];
+      expect(manufacturers).toContain('Meta-Published-Co');
+      expect(manufacturers).toContain('Meta-Draft-Co');
+
+      const boundaries = afterResponse.body.boundaries as {
+        minReleaseDate: string | null;
+        maxReleaseDate: string | null;
+        minScreenPixelWidth: number | null;
+        maxScreenPixelWidth: number | null;
+        minScreenPixelHeight: number | null;
+        maxScreenPixelHeight: number | null;
+        minPixelDensity: number | null;
+        maxPixelDensity: number | null;
+        minScreenCornerRadius: number | null;
+        maxScreenCornerRadius: number | null;
+      };
+
+      expect(boundaries.minReleaseDate).not.toBeNull();
+      expect(boundaries.maxReleaseDate).not.toBeNull();
+      expect(boundaries.minScreenPixelWidth).not.toBeNull();
+      expect(boundaries.maxScreenPixelWidth).not.toBeNull();
+      expect(boundaries.minScreenPixelHeight).not.toBeNull();
+      expect(boundaries.maxScreenPixelHeight).not.toBeNull();
+      expect(boundaries.minPixelDensity).not.toBeNull();
+      expect(boundaries.maxPixelDensity).not.toBeNull();
+      expect(boundaries.minScreenCornerRadius).not.toBeNull();
+      expect(boundaries.maxScreenCornerRadius).not.toBeNull();
+    });
+
+    it('should exclude draft-only metadata for unauthenticated users', async () => {
+      setAuthenticated();
+
+      const publishedOnlyMetaDevice = {
+        manufacturer: 'Meta-Visible-Co',
+        name: 'Visible Meta Device',
+        type: 'smartphone' as const,
+        releaseDate: '2025-05-05',
+        screenSize: 150,
+        screenPixelHeight: 2400,
+        screenPixelWidth: 1080,
+        screenCornerRadius: 12,
+        isDraft: false,
+      };
+
+      const draftOnlyMetaDevice = {
+        manufacturer: 'Meta-Hidden-Draft-Co',
+        name: 'Hidden Draft Meta Device',
+        type: 'laptop' as const,
+        releaseDate: '2024-04-04',
+        screenSize: 320,
+        screenPixelHeight: 1920,
+        screenPixelWidth: 1200,
+        screenCornerRadius: 8,
+        isDraft: true,
+      };
+
+      await request(app).post('/api/devices').send(publishedOnlyMetaDevice);
+      await request(app).post('/api/devices').send(draftOnlyMetaDevice);
+
+      setUnauthenticated();
+      const response = await request(app).get('/api/devices/meta');
+
+      expect(response.status).toBe(200);
+
+      const counts = response.body.counts as {
+        totalDevices: number;
+        draftDevices: number;
+        publishedDevices: number;
+      };
+      expect(counts.draftDevices).toBe(0);
+      expect(counts.totalDevices).toBe(counts.publishedDevices);
+
+      const manufacturers = response.body.manufacturers as string[];
+      expect(manufacturers).toContain('Meta-Visible-Co');
+      expect(manufacturers).not.toContain('Meta-Hidden-Draft-Co');
+    });
+  });
+
   describe('Authorization tests', () => {
     let publishedDeviceId: string;
     let draftDeviceId: string;

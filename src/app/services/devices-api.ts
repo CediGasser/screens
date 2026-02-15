@@ -3,18 +3,52 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { DeviceFilters, deviceFiltersToQueryParams } from './device-filters';
 
+export const DEVICE_TYPE_OPTIONS = {
+  smartphone: 'Smartphone',
+  tablet: 'Tablet',
+  laptop: 'Laptop',
+  desktop: 'Desktop',
+  wearable: 'Wearable',
+  other: 'Other',
+} as const;
+
+export type DeviceType = keyof typeof DEVICE_TYPE_OPTIONS;
+
 export interface Device {
   id: string;
   manufacturer: string;
   name: string;
-  type: 'smartphone' | 'tablet' | 'laptop' | 'desktop' | 'wearable' | 'other';
+  type: DeviceType;
   releaseDate: string;
-  /** Screen diagonal in mm */
+  /** Screen diagonal in inches */
   screenSize: number;
   screenPixelHeight: number;
   screenPixelWidth: number;
   screenCornerRadius: number;
   isDraft: boolean;
+}
+
+export interface DeviceMetadata {
+  boundaries: {
+    minReleaseDate: string | null;
+    maxReleaseDate: string | null;
+    minScreenSize: number | null;
+    maxScreenSize: number | null;
+    minScreenPixelWidth: number | null;
+    maxScreenPixelWidth: number | null;
+    minScreenPixelHeight: number | null;
+    maxScreenPixelHeight: number | null;
+    minPixelDensity: number | null;
+    maxPixelDensity: number | null;
+    minScreenCornerRadius: number | null;
+    maxScreenCornerRadius: number | null;
+  };
+  manufacturers: string[];
+  counts: {
+    totalDevices: number;
+    draftDevices: number;
+    publishedDevices: number;
+  };
 }
 
 export type DeviceFormData = Omit<Device, 'id'>;
@@ -27,6 +61,10 @@ export type DeviceFormData = Omit<Device, 'id'>;
 })
 export class DevicesApi {
   constructor(private http: HttpClient) {}
+
+  getDevicesMetadata(): Observable<DeviceMetadata> {
+    return this.http.get<DeviceMetadata>('/api/devices/meta');
+  }
 
   getPublishedDevices(filters: DeviceFilters = {}): Observable<Device[]> {
     return this.http.get<Device[]>('/api/devices', {

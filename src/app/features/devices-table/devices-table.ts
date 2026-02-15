@@ -3,6 +3,7 @@ import { DatePipe, DecimalPipe, NgTemplateOutlet } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { Device } from '../../services/devices-api';
 import { SortEvent } from 'primeng/api';
+import { DEVICE_TYPE_OPTIONS } from '../../services/devices-api';
 
 @Component({
   selector: 'app-devices-table',
@@ -65,7 +66,7 @@ import { SortEvent } from 'primeng/api';
           }
           <td>{{ device.manufacturer }}</td>
           <td>{{ device.name }}</td>
-          <td>{{ device.type }}</td>
+          <td>{{ getDeviceTypeLabel(device.type) }}</td>
           <td>{{ device.releaseDate | date: 'longDate' }}</td>
           <td>{{ device.screenSize }}</td>
           <td>{{ device.screenPixelWidth }}x{{ device.screenPixelHeight }}</td>
@@ -95,12 +96,18 @@ export class DevicesTable {
 
   protected internalSelection = signal<Device[]>([]);
 
+  /** Compute pixel density for a device in ppi (pixel per inch) */
   protected getPixelDensity(device: Device): number {
-    return device.screenPixelWidth / device.screenSize;
+    const diagonal = Math.sqrt(device.screenPixelWidth ** 2 + device.screenPixelHeight ** 2);
+    return diagonal / device.screenSize;
   }
 
   protected getTotalPixels(device: Device): number {
     return device.screenPixelWidth * device.screenPixelHeight;
+  }
+
+  protected getDeviceTypeLabel(type: Device['type']): string {
+    return DEVICE_TYPE_OPTIONS[type] || type;
   }
 
   /** Custom sort function to handle computed columns */

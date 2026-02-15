@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import * as devices from '../controllers/devices';
-import { Device, DeviceDocument } from '../types';
+import { Device, DeviceDocument, DeviceQueryFilters } from '../types';
 import { NotFoundError, UnauthorizedError } from '../errors';
 
 export const devicesRouter = Router();
@@ -20,6 +20,12 @@ devicesRouter.get('/', async (req, res) => {
   const filteredDevices = await devices.getDevices(queryFilters);
 
   return res.json(filteredDevices);
+});
+
+devicesRouter.get('/meta', async (req, res) => {
+  const includeDrafts = req.user.authenticated;
+  const metadata = await devices.getDevicesMetadata(includeDrafts);
+  return res.json(metadata);
 });
 
 devicesRouter.get('/:id', async (req, res) => {
@@ -68,7 +74,7 @@ devicesRouter.delete('/:id', async (req, res) => {
   return res.status(204).send();
 });
 
-function parseDeviceQueryFilters(query: Record<string, unknown>): devices.DeviceQueryFilters {
+function parseDeviceQueryFilters(query: Record<string, unknown>): DeviceQueryFilters {
   const type = readStringQuery(query['type']);
   return {
     isDraft: parseBooleanQuery(query['isDraft']),
@@ -77,6 +83,8 @@ function parseDeviceQueryFilters(query: Record<string, unknown>): devices.Device
     type: isDeviceType(type) ? type : undefined,
     releaseDateFrom: readStringQuery(query['releaseDateFrom']),
     releaseDateTo: readStringQuery(query['releaseDateTo']),
+    screenSizeMin: parseNumberQuery(query['screenSizeMin']),
+    screenSizeMax: parseNumberQuery(query['screenSizeMax']),
     screenPixelWidthMin: parseNumberQuery(query['screenPixelWidthMin']),
     screenPixelWidthMax: parseNumberQuery(query['screenPixelWidthMax']),
     screenPixelHeightMin: parseNumberQuery(query['screenPixelHeightMin']),

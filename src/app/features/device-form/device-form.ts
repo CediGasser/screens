@@ -22,13 +22,13 @@ export const DEVICE_TYPES: DeviceType[] = [
     <form (submit)="onSubmit($event)">
       <div class="form-row">
         <div class="form-group">
-          <label for="manufacturer">Manufacturer </label>
+          <label for="manufacturer">Manufacturer</label>
           <input id="manufacturer" [formField]="deviceForm.manufacturer" />
           <app-form-field-error [fieldState]="deviceForm.manufacturer()"></app-form-field-error>
         </div>
 
         <div class="form-group">
-          <label for="name">Device Name </label>
+          <label for="name">Device Name</label>
           <input id="name" [formField]="deviceForm.name" />
           <app-form-field-error [fieldState]="deviceForm.name()"></app-form-field-error>
         </div>
@@ -36,7 +36,7 @@ export const DEVICE_TYPES: DeviceType[] = [
 
       <div class="form-row">
         <div class="form-group">
-          <label for="type">Type </label>
+          <label for="type">Type</label>
           <select id="type" [formField]="deviceForm.type">
             @for (type of deviceTypes; track type) {
               <option [value]="type">{{ type | titlecase }}</option>
@@ -46,7 +46,7 @@ export const DEVICE_TYPES: DeviceType[] = [
         </div>
 
         <div class="form-group">
-          <label for="releaseDate">Release Date </label>
+          <label for="releaseDate">Release Date</label>
           <input id="releaseDate" type="date" [formField]="deviceForm.releaseDate" />
           <app-form-field-error [fieldState]="deviceForm.releaseDate()"></app-form-field-error>
         </div>
@@ -54,13 +54,13 @@ export const DEVICE_TYPES: DeviceType[] = [
 
       <div class="form-row">
         <div class="form-group">
-          <label for="screenSize">Screen Size (mm) </label>
-          <input id="screenSize" type="number" step="0.1" [formField]="deviceForm.screenSize" />
+          <label for="screenSize">Screen Size (inches)</label>
+          <input id="screenSize" step="0.001" type="number" [formField]="deviceForm.screenSize" />
           <app-form-field-error [fieldState]="deviceForm.screenSize()"></app-form-field-error>
         </div>
 
         <div class="form-group">
-          <label for="screenCornerRadius">Corner Radius (px) </label>
+          <label for="screenCornerRadius">Corner Radius (mm)</label>
           <input
             id="screenCornerRadius"
             type="number"
@@ -74,7 +74,7 @@ export const DEVICE_TYPES: DeviceType[] = [
 
       <div class="form-row">
         <div class="form-group">
-          <label for="screenPixelWidth">Screen Width (px) </label>
+          <label for="screenPixelWidth">Screen Width (px)</label>
           <input id="screenPixelWidth" type="number" [formField]="deviceForm.screenPixelWidth" />
           <app-form-field-error [fieldState]="deviceForm.screenPixelWidth()"></app-form-field-error>
         </div>
@@ -131,7 +131,7 @@ export class DeviceForm {
     required(fieldPath.type, { message: 'Type is required' });
     required(fieldPath.releaseDate, { message: 'Release date is required' });
     required(fieldPath.screenSize, { message: 'Screen size is required' });
-    min(fieldPath.screenSize, 1, { message: 'Screen size must be greater than 0' });
+    min(fieldPath.screenSize, 0, { message: 'Screen size must be greater than 0' });
     required(fieldPath.screenPixelWidth, { message: 'Screen width is required' });
     min(fieldPath.screenPixelWidth, 1, { message: 'Screen width must be greater than 0' });
     required(fieldPath.screenPixelHeight, { message: 'Screen height is required' });

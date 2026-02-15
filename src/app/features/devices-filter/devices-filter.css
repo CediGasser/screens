@@ -8,13 +8,26 @@
   margin-bottom: var(--space-l);
 }
 
+.toggle {
+  align-self: flex-start;
+}
+
 .filter-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: var(--space-m);
+}
+
+small {
+  color: var(--c-bodyDimmed);
+  font-size: var(--text-xs);
 }
 
 .actions {
   display: flex;
   justify-content: flex-end;
+}
+
+label {
+  margin-bottom: var(--space-m);
 }

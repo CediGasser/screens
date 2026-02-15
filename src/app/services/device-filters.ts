@@ -1,7 +1,9 @@
+import { DEVICE_TYPE_OPTIONS, DeviceType } from './devices-api';
+
 export interface DeviceFilters {
   manufacturer?: string;
   name?: string;
-  type?: 'smartphone' | 'tablet' | 'laptop' | 'desktop' | 'wearable' | 'other';
+  type?: DeviceType;
   releaseDateFrom?: string;
   releaseDateTo?: string;
   screenPixelWidthMin?: number;
@@ -13,15 +15,6 @@ export interface DeviceFilters {
   screenCornerRadiusMin?: number;
   screenCornerRadiusMax?: number;
 }
-
-export const DEVICE_TYPE_OPTIONS: Array<DeviceFilters['type']> = [
-  'smartphone',
-  'tablet',
-  'laptop',
-  'desktop',
-  'wearable',
-  'other',
-];
 
 export function normalizeDeviceFilters(filters: DeviceFilters): DeviceFilters {
   const normalized: DeviceFilters = {
@@ -36,8 +29,6 @@ export function normalizeDeviceFilters(filters: DeviceFilters): DeviceFilters {
     screenPixelHeightMax: normalizeNumber(filters.screenPixelHeightMax),
     pixelDensityMin: normalizeNumber(filters.pixelDensityMin),
     pixelDensityMax: normalizeNumber(filters.pixelDensityMax),
-    screenCornerRadiusMin: normalizeNumber(filters.screenCornerRadiusMin),
-    screenCornerRadiusMax: normalizeNumber(filters.screenCornerRadiusMax),
   };
 
   return Object.fromEntries(
@@ -47,9 +38,7 @@ export function normalizeDeviceFilters(filters: DeviceFilters): DeviceFilters {
 
 export function deviceFiltersToQueryParams(filters: DeviceFilters): Record<string, string> {
   const normalized = normalizeDeviceFilters(filters);
-  return Object.fromEntries(
-    Object.entries(normalized).map(([key, value]) => [key, String(value)]),
-  );
+  return Object.fromEntries(Object.entries(normalized).map(([key, value]) => [key, String(value)]));
 }
 
 export function deviceFiltersFromQueryParams(query: Record<string, string | null | undefined>) {
@@ -70,7 +59,10 @@ export function deviceFiltersFromQueryParams(query: Record<string, string | null
   });
 }
 
-export function deviceFiltersFromParamMap(paramMap: { keys: string[]; get(name: string): string | null }) {
+export function deviceFiltersFromParamMap(paramMap: {
+  keys: string[];
+  get(name: string): string | null;
+}) {
   const query: Record<string, string | null> = {};
   for (const key of paramMap.keys) {
     query[key] = paramMap.get(key);
@@ -86,7 +78,7 @@ function parseNumber(value: string | null | undefined): number | undefined {
 
 function parseType(value: string | null | undefined): DeviceFilters['type'] | undefined {
   if (!value) return undefined;
-  return DEVICE_TYPE_OPTIONS.includes(value as DeviceFilters['type'])
+  return DEVICE_TYPE_OPTIONS[value as NonNullable<DeviceFilters['type']>]
     ? (value as DeviceFilters['type'])
     : undefined;
 }

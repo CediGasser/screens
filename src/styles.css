@@ -57,7 +57,7 @@
 
   --greyH: var(--accentH);
   --greyS: 15%;
-  --initialGreyLightness: 93%;
+  --initialGreyLightness: 96%;
   --greyscaleLightnessIncrement: 11.3%;
 
   --grey1L: var(--initialGreyLightness);

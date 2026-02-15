@@ -9,7 +9,6 @@
   background-color: var(--c-overlay);
 }
 
-/* Header styles */
 .p-datatable-thead > tr > th {
   color: var(--c-body);
   padding: var(--space-s) var(--space-m);
@@ -25,7 +24,7 @@
   transition: background-color 150ms ease;
 
   &:hover {
-    background-color: hsl(var(--accentH), var(--accentS), calc(var(--accentL) - 5%));
+    background-color: var(--c-accent);
 
     & p-sorticon {
       color: var(--c-body);
@@ -43,7 +42,6 @@ p-sorticon {
   color: var(--c-bodyDimmed);
 }
 
-/* Body styles */
 .p-datatable-tbody > tr {
   background-color: var(--c-background);
   transition: background-color 150ms ease;
@@ -63,7 +61,6 @@ p-sorticon {
   background-color: var(--c-overlay);
 }
 
-/* Striped rows (if enabled) */
 .p-datatable-striped .p-datatable-tbody > tr:nth-child(even) {
   background-color: var(--c-grey1);
 }
@@ -72,7 +69,6 @@ p-sorticon {
   background-color: var(--c-overlay);
 }
 
-/* Selection styles */
 .p-datatable-tbody > tr.p-highlight {
   background-color: var(--c-accentContrasted);
 }
@@ -111,7 +107,6 @@ p-sorticon {
   color: var(--c-accentContrasted);
 }
 
-/* Loading overlay */
 .p-datatable-loading-overlay {
   background-color: var(--c-overlay);
   backdrop-filter: blur(2px);
@@ -123,7 +118,6 @@ p-sorticon {
   height: 2rem;
 }
 
-/* Empty message */
 .p-datatable-emptymessage > td {
   text-align: center;
   padding: var(--space-xl) var(--space-m);
@@ -134,10 +128,40 @@ p-sorticon {
 /* Dark mode adjustments */
 @media (prefers-color-scheme: dark) {
   .p-datatable-tbody > tr > td {
-    border-bottom-color: var(--c-grey6);
+    border-bottom-color: var(--c-border);
   }
 
   .p-datatable-striped .p-datatable-tbody > tr:nth-child(even) {
-    background-color: var(--c-grey7);
+    background-color: var(--c-grey9);
   }
+}
+
+/* Slider */
+.p-slider {
+  margin-top: calc(var(--space-l) / 2);
+  background: var(--c-overlay);
+  border-radius: var(--radius);
+  height: 0.5rem;
+  width: calc(100% - var(--space-l));
+  inset-inline-start: calc(var(--space-l) / 2);
+}
+
+.p-slider .p-slider-range {
+  background: var(--c-accent);
+}
+
+.p-slider .p-slider-handle {
+  width: var(--space-l);
+  height: var(--space-l);
+  margin-top: calc(var(--space-l) / 2 * -1);
+  border-radius: var(--radius);
+  background: var(--c-accent);
+  box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.5);
+  border: var(--fieldBorderWidth) solid var(--c-accent);
+  transform: translateX(calc(-1 * var(--space-l) / 2));
+}
+
+.p-slider .p-slider-handle:focus-visible {
+  outline: 2px solid var(--c-accentContrasted);
+  outline-offset: 2px;
 }
