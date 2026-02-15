@@ -165,6 +165,16 @@ input[type='submit'] {
   }
 }
 
+button.icon-only {
+  padding: var(--space-s);
+}
+
+.icon-only lucide-icon {
+  display: block;
+  color: var(--c-body);
+  line-height: 0;
+}
+
 label {
   display: flex;
   flex-direction: column;

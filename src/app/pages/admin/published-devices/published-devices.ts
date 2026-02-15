@@ -11,17 +11,22 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { combineLatest, debounceTime, map, switchMap } from 'rxjs';
+import { LucideAngularModule, Pencil, Trash } from 'lucide-angular';
 
 @Component({
   selector: 'app-published-devices',
-  imports: [DevicesFilter, DevicesTable, DeviceFormDialog],
+  imports: [DevicesFilter, DevicesTable, DeviceFormDialog, LucideAngularModule],
   template: `
     <h2>Published Devices</h2>
     <app-devices-filter [filters]="filters()" (filtersChange)="onFiltersChange($event)" />
     <app-devices-table [devices]="devices()">
       <ng-template #actions let-device>
-        <button (click)="onEditDevice(device)">Edit</button>
-        <button (click)="onDeleteDevice(device)">Delete</button>
+        <button class="icon-only" (click)="onEditDevice(device)" title="Edit">
+          <lucide-icon [img]="PencilIcon" size="16" />
+        </button>
+        <button class="icon-only" (click)="onDeleteDevice(device)" title="Delete">
+          <lucide-icon [img]="TrashIcon" size="16" />
+        </button>
       </ng-template>
     </app-devices-table>
 
@@ -30,6 +35,9 @@ import { combineLatest, debounceTime, map, switchMap } from 'rxjs';
   styleUrl: './published-devices.css',
 })
 export class PublishedDevices {
+  protected TrashIcon = Trash;
+  protected PencilIcon = Pencil;
+
   protected devices: Signal<Device[]>;
   protected filters: Signal<DeviceFilters>;
   protected deviceFormDialog = viewChild.required<DeviceFormDialog>('deviceFormDialog');

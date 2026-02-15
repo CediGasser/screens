@@ -4,6 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { SliderModule } from 'primeng/slider';
 import { DeviceFilters, normalizeDeviceFilters } from '../../services/device-filters';
 import { DeviceMetadata, DevicesApi, DEVICE_TYPE_OPTIONS } from '../../services/devices-api';
+import { LucideAngularModule, ChevronDown } from 'lucide-angular';
 
 const EMPTY_METADATA: DeviceMetadata = {
   boundaries: {
@@ -30,7 +31,7 @@ const EMPTY_METADATA: DeviceMetadata = {
 
 @Component({
   selector: 'app-devices-filter',
-  imports: [FormsModule, SliderModule],
+  imports: [FormsModule, SliderModule, LucideAngularModule],
   host: {
     ngSkipHydration: 'true',
   },
@@ -42,7 +43,8 @@ const EMPTY_METADATA: DeviceMetadata = {
         (click)="toggleCollapsed()"
         [attr.aria-expanded]="!collapsed()"
       >
-        Filters {{ collapsed() ? '▼' : '▲' }}
+        Filters
+        <lucide-icon [img]="ChevronDownIcon" size="16" [class.rotated]="!collapsed()" />
       </button>
 
       @if (!collapsed()) {
@@ -161,6 +163,8 @@ const EMPTY_METADATA: DeviceMetadata = {
 export class DevicesFilter {
   filters = input<DeviceFilters>({});
   filtersChange = output<DeviceFilters>();
+
+  protected ChevronDownIcon = ChevronDown;
 
   protected readonly deviceTypes = Object.entries(DEVICE_TYPE_OPTIONS);
   private readonly devicesApi = inject(DevicesApi);

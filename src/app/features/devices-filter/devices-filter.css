@@ -10,6 +10,9 @@
 
 .toggle {
   align-self: flex-start;
+  display: flex;
+  align-items: center;
+  gap: var(--space-s);
 }
 
 .filter-grid {
@@ -30,4 +33,16 @@ small {
 
 label {
   margin-bottom: var(--space-m);
+}
+
+lucide-icon {
+  line-height: 0;
+}
+
+.toggle lucide-icon {
+  transition: transform 150ms ease;
+}
+
+.rotated {
+  transform: rotate(180deg);
 }

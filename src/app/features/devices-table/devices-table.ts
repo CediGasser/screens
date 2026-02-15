@@ -4,10 +4,11 @@ import { TableModule } from 'primeng/table';
 import { Device } from '../../services/devices-api';
 import { SortEvent } from 'primeng/api';
 import { DEVICE_TYPE_OPTIONS } from '../../services/devices-api';
+import { LucideAngularModule, TreePalm } from 'lucide-angular';
 
 @Component({
   selector: 'app-devices-table',
-  imports: [TableModule, DatePipe, DecimalPipe, NgTemplateOutlet],
+  imports: [TableModule, DatePipe, DecimalPipe, NgTemplateOutlet, LucideAngularModule],
   template: `
     <p-table
       [value]="devices()"
@@ -81,6 +82,14 @@ import { DEVICE_TYPE_OPTIONS } from '../../services/devices-api';
           }
         </tr>
       </ng-template>
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="9" style="text-align: center; padding: 2rem;">
+            <lucide-icon [img]="TreePalmIcon" size="48" strokeWidth="1" /><br />
+            Nothing to see here. <br />
+          </td>
+        </tr>
+      </ng-template>
     </p-table>
   `,
   styleUrl: './devices-table.css',
@@ -93,6 +102,8 @@ export class DevicesTable {
   actionsTemplate = contentChild<TemplateRef<{ $implicit: Device }>>('actions');
 
   selection = computed(() => this.internalSelection());
+
+  protected TreePalmIcon = TreePalm;
 
   protected internalSelection = signal<Device[]>([]);
 
