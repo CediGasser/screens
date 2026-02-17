@@ -3,7 +3,7 @@ import express, { RequestHandler } from 'express';
 import request from 'supertest';
 import apiRouter from '../index';
 import type { User } from '../middlewares/auth';
-import { stopDb } from '../config/__mocks__/db';
+import { setDbConnectionFailure, stopDb } from '../config/__mocks__/db';
 
 const MOCK_DEVICES = [
   {
@@ -195,6 +195,20 @@ describe('Devices API routes', () => {
       const response = await request(app).delete('/api/devices/507f1f77bcf86cd799439011');
       expect(response.status).toBe(404);
       expect(response.body).toEqual({ error: 'Device not found' });
+    });
+
+    it('should return 503 when MongoDB is unavailable', async () => {
+      setDbConnectionFailure(true);
+      try {
+        const response = await request(app).get('/api/devices');
+        expect(response.status).toBe(503);
+        expect(response.body).toEqual({
+          error: 'Database unavailable. Please try again in a moment.',
+          code: 'DB_UNAVAILABLE',
+        });
+      } finally {
+        setDbConnectionFailure(false);
+      }
     });
   });
 
