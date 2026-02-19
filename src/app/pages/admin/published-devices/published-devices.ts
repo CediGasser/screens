@@ -1,4 +1,4 @@
-import { Component, Signal, signal, viewChild } from '@angular/core';
+import { Component, computed, Signal, signal, viewChild } from '@angular/core';
 import { Device, DevicesApi } from '../../../services/devices-api';
 import { DevicesTable } from '../../../features/devices-table/devices-table';
 import { DeviceFormDialog } from '../../../features/device-form-dialog/device-form-dialog';
@@ -19,7 +19,7 @@ import { LucideAngularModule, Pencil, Trash } from 'lucide-angular';
   template: `
     <h2>Published Devices</h2>
     <app-devices-filter [filters]="filters()" (filtersChange)="onFiltersChange($event)" />
-    <app-devices-table [devices]="devices()">
+    <app-devices-table #devicesTable [devices]="devices()" [enableSelection]="true">
       <ng-template #actions let-device>
         <button class="icon-only" (click)="onEditDevice(device)" title="Edit">
           <lucide-icon [img]="PencilIcon" size="16" />
@@ -29,6 +29,14 @@ import { LucideAngularModule, Pencil, Trash } from 'lucide-angular';
         </button>
       </ng-template>
     </app-devices-table>
+
+    @if (selectedDevicesCount() > 0) {
+      <div class="bulk-actions">
+        <button class="secondary" (click)="onDeleteSelectedDevices()">
+          Delete {{ selectedDevicesCount() }} published devices
+        </button>
+      </div>
+    }
 
     <app-device-form-dialog #deviceFormDialog (deviceUpdated)="onDeviceUpdated($event)" />
   `,
@@ -41,6 +49,9 @@ export class PublishedDevices {
   protected devices: Signal<Device[]>;
   protected filters: Signal<DeviceFilters>;
   protected deviceFormDialog = viewChild.required<DeviceFormDialog>('deviceFormDialog');
+  private devicesTable = viewChild<DevicesTable>('devicesTable');
+  protected selectedDevices = computed(() => this.devicesTable()?.selection() ?? []);
+  protected selectedDevicesCount = computed(() => this.selectedDevices().length);
   private refreshTick = signal(0);
 
   constructor(
@@ -79,6 +90,20 @@ export class PublishedDevices {
       this.devicesApi.deleteDevice(device.id).subscribe({
         next: () => this.refreshTick.update((value) => value + 1),
         error: (err) => console.error('Failed to delete device:', err),
+      });
+    }
+  }
+
+  onDeleteSelectedDevices() {
+    const selectedDevices = this.selectedDevices();
+    if (selectedDevices.length === 0) {
+      return;
+    }
+
+    if (confirm(`Are you sure you want to delete ${selectedDevices.length} published devices?`)) {
+      this.devicesApi.bulkDeleteDevices(selectedDevices.map((device) => device.id)).subscribe({
+        next: () => this.refreshTick.update((value) => value + 1),
+        error: (err) => console.error('Failed to delete selected devices:', err),
       });
     }
   }

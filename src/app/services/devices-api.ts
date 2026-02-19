@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { forkJoin, Observable, of } from 'rxjs';
 import { DeviceFilters, deviceFiltersToQueryParams } from './device-filters';
 
 export const DEVICE_TYPE_OPTIONS = {
@@ -94,5 +94,23 @@ export class DevicesApi {
 
   deleteDevice(id: string): Observable<void> {
     return this.http.delete<void>(`/api/devices/${id}`);
+  }
+
+  bulkUpdateDevices(
+    updates: { id: string; data: Partial<DeviceFormData> }[],
+  ): Observable<Device[]> {
+    if (updates.length === 0) {
+      return of([]);
+    }
+
+    return forkJoin(updates.map(({ id, data }) => this.updateDevice(id, data)));
+  }
+
+  bulkDeleteDevices(ids: string[]): Observable<void[]> {
+    if (ids.length === 0) {
+      return of([]);
+    }
+
+    return forkJoin(ids.map((id) => this.deleteDevice(id)));
   }
 }

@@ -14,6 +14,7 @@ import { LucideAngularModule, TreePalm } from 'lucide-angular';
       [value]="devices()"
       [loading]="loading()"
       [scrollable]="true"
+      [selectionMode]="enableSelection() ? 'multiple' : null"
       [tableStyle]="{ 'min-width': '60rem' }"
       dataKey="id"
       sortField="releaseDate"

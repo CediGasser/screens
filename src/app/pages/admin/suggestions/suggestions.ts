@@ -1,4 +1,4 @@
-import { Component, Signal, signal, viewChild } from '@angular/core';
+import { Component, computed, Signal, signal, viewChild } from '@angular/core';
 import { Device, DevicesApi } from '../../../services/devices-api';
 import { DevicesTable } from '../../../features/devices-table/devices-table';
 import { DeviceFormDialog } from '../../../features/device-form-dialog/device-form-dialog';
@@ -19,7 +19,7 @@ import { LucideAngularModule, Check, Pencil, Trash } from 'lucide-angular';
   template: `
     <h2>Suggested Devices</h2>
     <app-devices-filter [filters]="filters()" (filtersChange)="onFiltersChange($event)" />
-    <app-devices-table [devices]="devices()">
+    <app-devices-table #devicesTable [devices]="devices()" [enableSelection]="true">
       <ng-template #actions let-device>
         <button class="icon-only" (click)="onApproveDevice(device)" title="Approve">
           <lucide-icon [img]="CheckIcon" size="16" />
@@ -33,6 +33,17 @@ import { LucideAngularModule, Check, Pencil, Trash } from 'lucide-angular';
       </ng-template>
     </app-devices-table>
 
+    @if (selectedDevicesCount() > 0) {
+      <div class="bulk-actions">
+        <button (click)="onApproveSelectedDevices()">
+          Approve {{ selectedDevicesCount() }} suggestions
+        </button>
+        <button class="secondary" (click)="onDeleteSelectedDevices()">
+          Delete {{ selectedDevicesCount() }} suggestions
+        </button>
+      </div>
+    }
+
     <app-device-form-dialog #deviceFormDialog (deviceUpdated)="onDeviceUpdated($event)" />
   `,
   styleUrl: './suggestions.css',
@@ -45,6 +56,9 @@ export class Suggestions {
   protected devices: Signal<Device[]>;
   protected filters: Signal<DeviceFilters>;
   protected deviceFormDialog = viewChild.required<DeviceFormDialog>('deviceFormDialog');
+  private devicesTable = viewChild<DevicesTable>('devicesTable');
+  protected selectedDevices = computed(() => this.devicesTable()?.selection() ?? []);
+  protected selectedDevicesCount = computed(() => this.selectedDevices().length);
   private refreshTick = signal(0);
 
   constructor(
@@ -90,6 +104,34 @@ export class Suggestions {
       this.devicesApi.deleteDevice(device.id).subscribe({
         next: () => this.refreshTick.update((value) => value + 1),
         error: (err) => console.error('Failed to delete device:', err),
+      });
+    }
+  }
+
+  onApproveSelectedDevices() {
+    const selectedIds = this.selectedDevices().map((device) => device.id);
+    if (selectedIds.length === 0) {
+      return;
+    }
+
+    this.devicesApi
+      .bulkUpdateDevices(selectedIds.map((id) => ({ id, data: { isDraft: false } })))
+      .subscribe({
+        next: () => this.refreshTick.update((value) => value + 1),
+        error: (err) => console.error('Failed to approve selected devices:', err),
+      });
+  }
+
+  onDeleteSelectedDevices() {
+    const selectedDevices = this.selectedDevices();
+    if (selectedDevices.length === 0) {
+      return;
+    }
+
+    if (confirm(`Are you sure you want to delete ${selectedDevices.length} suggestions?`)) {
+      this.devicesApi.bulkDeleteDevices(selectedDevices.map((device) => device.id)).subscribe({
+        next: () => this.refreshTick.update((value) => value + 1),
+        error: (err) => console.error('Failed to delete selected devices:', err),
       });
     }
   }
