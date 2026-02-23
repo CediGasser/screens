@@ -535,6 +535,90 @@ describe('Devices API routes', () => {
       });
     });
   });
+
+  describe('Bulk actions routes', () => {
+    beforeEach(() => {
+      setAuthenticated();
+    });
+
+    it('should bulk update devices using optimized endpoint', async () => {
+      const { id: _id1, ...device1 } = MOCK_DEVICES[0];
+      const { id: _id2, ...device2 } = MOCK_DEVICES[1];
+
+      const createResponse1 = await request(app).post('/api/devices').send(device1);
+      const createResponse2 = await request(app).post('/api/devices').send(device2);
+
+      const updates = [
+        { id: createResponse1.body.id, data: { name: 'Bulk Updated 1', isDraft: true } },
+        { id: createResponse2.body.id, data: { manufacturer: 'Bulk Updated Co' } },
+      ];
+
+      const response = await request(app)
+        .post('/api/devices/bulk-actions/update')
+        .send({ updates });
+
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveLength(2);
+      expect(response.body[0].name).toBe('Bulk Updated 1');
+      expect(response.body[0].isDraft).toBe(true);
+      expect(response.body[1].manufacturer).toBe('Bulk Updated Co');
+    });
+
+    it('should bulk delete devices using optimized endpoint', async () => {
+      const { id: _id1, ...device1 } = MOCK_DEVICES[3];
+      const { id: _id2, ...device2 } = MOCK_DEVICES[5];
+
+      const createResponse1 = await request(app).post('/api/devices').send(device1);
+      const createResponse2 = await request(app).post('/api/devices').send(device2);
+
+      const ids = [createResponse1.body.id, createResponse2.body.id];
+      const response = await request(app).post('/api/devices/bulk-actions/delete').send({ ids });
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({ deletedCount: 2 });
+
+      const getDeleted1 = await request(app).get(`/api/devices/${ids[0]}`);
+      const getDeleted2 = await request(app).get(`/api/devices/${ids[1]}`);
+      expect(getDeleted1.status).toBe(404);
+      expect(getDeleted2.status).toBe(404);
+    });
+
+    it('should bulk create devices using optimized endpoint', async () => {
+      const { id: _id1, ...device1 } = MOCK_DEVICES[0];
+      const { id: _id2, ...device2 } = MOCK_DEVICES[2];
+
+      const payload = [device1, device2];
+      const response = await request(app).post('/api/devices/bulk-actions/create').send(payload);
+
+      expect(response.status).toBe(201);
+      expect(response.body).toHaveLength(2);
+      expect(response.body[0]).toMatchObject(device1);
+      expect(response.body[1]).toMatchObject(device2);
+      expect(response.body[0].id).toBeDefined();
+      expect(response.body[1].id).toBeDefined();
+    });
+
+    it('should reject bulk create when request body is not an array', async () => {
+      const { id: _id, ...device } = MOCK_DEVICES[0];
+      const response = await request(app)
+        .post('/api/devices/bulk-actions/create')
+        .send({ devices: [device] });
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toBe('Request body must be an array of devices');
+    });
+
+    it('should require authentication for bulk action routes', async () => {
+      setUnauthenticated();
+
+      const response = await request(app)
+        .post('/api/devices/bulk-actions/delete')
+        .send({ ids: [] });
+
+      expect(response.status).toBe(401);
+      expect(response.body.error).toBe('Unauthorized');
+    });
+  });
 });
 
 let mockUser: User = { authenticated: false };

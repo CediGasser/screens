@@ -4,6 +4,7 @@ import { createLogger } from './middlewares/logger';
 import { errorMiddleware } from './middlewares/error';
 import { authMiddleware, initializeAuth } from './middlewares/auth';
 import { devicesRouter } from './routes/devices';
+import { bulkActionsRouter } from './routes/bulk-actions';
 
 await initializeAuth();
 
@@ -26,6 +27,7 @@ apiRouter.get('/config', (req, res) => {
 });
 
 apiRouter.use('/devices', devicesRouter);
+apiRouter.use('/devices/bulk-actions', bulkActionsRouter);
 
 apiRouter.use(errorMiddleware);
 

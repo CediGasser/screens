@@ -1,8 +1,13 @@
 import { Filter, ObjectId, WithId } from 'mongodb';
 import { getDbConnection } from '../config/db';
 import { Device, DeviceDocument } from '../types';
-import { NotFoundError, WtfError } from '../errors';
+import { NotFoundError, ValidationError, WtfError } from '../errors';
 import type { DeviceQueryFilters, DeviceMetadata } from '../types';
+
+export interface DeviceBulkUpdate {
+  id: string;
+  data: Partial<DeviceDocument>;
+}
 
 export async function getDevices(filters: DeviceQueryFilters = {}): Promise<Device[]> {
   const { devicesCollection } = await getDbConnection();
@@ -112,6 +117,25 @@ export async function createDevice(device: DeviceDocument): Promise<Device> {
   return newDevice;
 }
 
+export async function bulkCreateDevices(devices: DeviceDocument[]): Promise<Device[]> {
+  if (devices.length === 0) {
+    return [];
+  }
+
+  const { devicesCollection } = await getDbConnection();
+  const result = await devicesCollection.insertMany(devices, { ordered: true });
+  const insertedIds = Object.values(result.insertedIds);
+
+  const insertedDocs = await devicesCollection.find({ _id: { $in: insertedIds } }).toArray();
+
+  const byId = new Map(insertedDocs.map((doc) => [doc._id.toString(), doc]));
+  return insertedIds.map((id) => {
+    const doc = byId.get(id.toString());
+    if (!doc) throw new WtfError('Failed to retrieve one or more newly created devices');
+    return mapDocumentToDevice(doc);
+  });
+}
+
 export async function updateDevice(id: string, device: Partial<DeviceDocument>): Promise<Device> {
   if (!ObjectId.isValid(id)) throw new NotFoundError('Device');
 
@@ -125,6 +149,53 @@ export async function updateDevice(id: string, device: Partial<DeviceDocument>):
   return mapDocumentToDevice(result);
 }
 
+export async function bulkUpdateDevices(updates: DeviceBulkUpdate[]): Promise<Device[]> {
+  if (updates.length === 0) {
+    return [];
+  }
+
+  const invalidIds = updates.map((update) => update.id).filter((id) => !ObjectId.isValid(id));
+
+  if (invalidIds.length > 0) {
+    throw new ValidationError(`Invalid device ids: ${invalidIds.join(', ')}`);
+  }
+
+  const duplicateUpdateIds = findDuplicateIds(updates.map((update) => update.id));
+  if (duplicateUpdateIds.length > 0) {
+    throw new ValidationError(`Duplicate device ids in updates: ${duplicateUpdateIds.join(', ')}`);
+  }
+
+  const objectIds = updates.map((update) => new ObjectId(update.id));
+  const { devicesCollection } = await getDbConnection();
+
+  const existingCount = await devicesCollection.countDocuments({ _id: { $in: objectIds } });
+  if (existingCount !== updates.length) {
+    const existingDocs = await devicesCollection.find({ _id: { $in: objectIds } }).toArray();
+    const existingIdSet = new Set(existingDocs.map((doc) => doc._id.toString()));
+    const missingIds = updates.map((update) => update.id).filter((id) => !existingIdSet.has(id));
+    throw new NotFoundError(`Devices (${missingIds.join(', ')})`);
+  }
+
+  await devicesCollection.bulkWrite(
+    updates.map((update) => ({
+      updateOne: {
+        filter: { _id: new ObjectId(update.id) },
+        update: { $set: update.data },
+      },
+    })),
+    { ordered: true },
+  );
+
+  const updatedDocs = await devicesCollection.find({ _id: { $in: objectIds } }).toArray();
+  const byId = new Map(updatedDocs.map((doc) => [doc._id.toString(), doc]));
+
+  return updates.map((update) => {
+    const doc = byId.get(update.id);
+    if (!doc) throw new WtfError(`Failed to retrieve updated device ${update.id}`);
+    return mapDocumentToDevice(doc);
+  });
+}
+
 export async function deleteDevice(id: string): Promise<boolean> {
   if (!ObjectId.isValid(id)) return false;
 
@@ -133,6 +204,38 @@ export async function deleteDevice(id: string): Promise<boolean> {
   if (!existing) throw new NotFoundError('Device');
   const result = await devicesCollection.deleteOne({ _id: new ObjectId(id) });
   return result.acknowledged;
+}
+
+export async function bulkDeleteDevices(ids: string[]): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
+
+  const invalidIds = ids.filter((id) => !ObjectId.isValid(id));
+  if (invalidIds.length > 0) {
+    throw new ValidationError(`Invalid device ids: ${invalidIds.join(', ')}`);
+  }
+
+  const duplicateDeleteIds = findDuplicateIds(ids);
+  if (duplicateDeleteIds.length > 0) {
+    throw new ValidationError(
+      `Duplicate device ids in delete list: ${duplicateDeleteIds.join(', ')}`,
+    );
+  }
+
+  const objectIds = ids.map((id) => new ObjectId(id));
+  const { devicesCollection } = await getDbConnection();
+
+  const existingCount = await devicesCollection.countDocuments({ _id: { $in: objectIds } });
+  if (existingCount !== ids.length) {
+    const existingDocs = await devicesCollection.find({ _id: { $in: objectIds } }).toArray();
+    const existingIdSet = new Set(existingDocs.map((doc) => doc._id.toString()));
+    const missingIds = ids.filter((id) => !existingIdSet.has(id));
+    throw new NotFoundError(`Devices (${missingIds.join(', ')})`);
+  }
+
+  const result = await devicesCollection.deleteMany({ _id: { $in: objectIds } });
+  return result.deletedCount;
 }
 
 function mapDocumentToDevice(doc: WithId<DeviceDocument>): Device {
@@ -226,10 +329,27 @@ function applyNumberRangeFilter(
   if (min != null) range.$gte = min;
   if (max != null) range.$lte = max;
   if (Object.keys(range).length > 0) {
-    (query as Record<string, unknown>)[field] = range;
+    return ((query as Record<string, unknown>)[field] = range);
+  } else {
+    return;
   }
 }
 
 function escapeRegex(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function findDuplicateIds(ids: string[]): string[] {
+  const seen = new Set<string>();
+  const duplicates = new Set<string>();
+
+  for (const id of ids) {
+    if (seen.has(id)) {
+      duplicates.add(id);
+    } else {
+      seen.add(id);
+    }
+  }
+
+  return Array.from(duplicates);
 }
