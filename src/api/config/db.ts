@@ -3,10 +3,19 @@ import type { DeviceDocument } from '../types';
 import { AppError } from '../errors';
 
 const URI = process.env['MONGODB_URI'] || 'mongodb://localhost:27017/screens';
+const DEFAULT_MONGODB_TIMEOUT_MS = 5000;
+const mongodbTimeoutFromEnv = Number(process.env['MONGODB_CONNECT_TIMEOUT_MS']);
+const MONGODB_CONNECT_TIMEOUT_MS =
+  Number.isFinite(mongodbTimeoutFromEnv) && mongodbTimeoutFromEnv > 0
+    ? mongodbTimeoutFromEnv
+    : DEFAULT_MONGODB_TIMEOUT_MS;
 
 export const getDbConnection = async (uri: string = URI) => {
   try {
-    const client = await MongoClient.connect(uri);
+    const client = await MongoClient.connect(uri, {
+      connectTimeoutMS: MONGODB_CONNECT_TIMEOUT_MS,
+      serverSelectionTimeoutMS: MONGODB_CONNECT_TIMEOUT_MS,
+    });
     const db = client.db('screens');
     const devicesCollection = db.collection<DeviceDocument>('devices');
     return { db, devicesCollection, client };
