@@ -290,6 +290,50 @@ describe('Devices API routes', () => {
         ),
       ).toBe(true);
     });
+
+    it('should return 400 for invalid isDraft query value', async () => {
+      setAuthenticated();
+      const response = await request(app).get('/api/devices?isDraft=maybe');
+      expect(response.status).toBe(400);
+      expect(response.body.error).toBe('isDraft must be either "true" or "false"');
+    });
+
+    it('should return 400 for invalid type query value', async () => {
+      setAuthenticated();
+      const response = await request(app).get('/api/devices?type=console');
+      expect(response.status).toBe(400);
+      expect(response.body.error).toContain('Invalid type filter: console');
+    });
+
+    it('should return 400 for invalid numeric filter values', async () => {
+      setAuthenticated();
+      const response = await request(app).get('/api/devices?screenPixelWidthMin=abc');
+      expect(response.status).toBe(400);
+      expect(response.body.error).toBe('screenPixelWidthMin must be a valid number');
+    });
+
+    it('should return 400 when a numeric range min is greater than max', async () => {
+      setAuthenticated();
+      const response = await request(app).get('/api/devices?pixelDensityMin=10&pixelDensityMax=5');
+      expect(response.status).toBe(400);
+      expect(response.body.error).toBe('pixelDensityMin cannot be greater than pixelDensityMax');
+    });
+
+    it('should return 400 for invalid date filters', async () => {
+      setAuthenticated();
+      const response = await request(app).get('/api/devices?releaseDateFrom=2021/01/01');
+      expect(response.status).toBe(400);
+      expect(response.body.error).toBe('releaseDateFrom must use YYYY-MM-DD format');
+    });
+
+    it('should return 400 when releaseDateFrom is greater than releaseDateTo', async () => {
+      setAuthenticated();
+      const response = await request(app).get(
+        '/api/devices?releaseDateFrom=2024-01-01&releaseDateTo=2023-01-01',
+      );
+      expect(response.status).toBe(400);
+      expect(response.body.error).toBe('releaseDateFrom cannot be greater than releaseDateTo');
+    });
   });
 
   describe('Metadata tests', () => {
@@ -617,6 +661,83 @@ describe('Devices API routes', () => {
 
       expect(response.status).toBe(401);
       expect(response.body.error).toBe('Unauthorized');
+    });
+
+    it('should reject bulk update when updates is not an array', async () => {
+      const response = await request(app)
+        .post('/api/devices/bulk-actions/update')
+        .send({ updates: 'invalid' });
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toBe('Request body must include an updates array');
+    });
+
+    it('should reject bulk update when an update entry has no fields to update', async () => {
+      const { id: _id, ...device } = MOCK_DEVICES[0];
+      const createResponse = await request(app).post('/api/devices').send(device);
+
+      const response = await request(app)
+        .post('/api/devices/bulk-actions/update')
+        .send({ updates: [{ id: createResponse.body.id, data: {} }] });
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toBe(
+        'Update at index 0 data must include at least one updatable field',
+      );
+    });
+
+    it('should reject bulk delete when ids is not an array', async () => {
+      const response = await request(app)
+        .post('/api/devices/bulk-actions/delete')
+        .send({ ids: 'invalid' });
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toBe('Request body must include an ids array');
+    });
+
+    it('should reject bulk delete when ids contains invalid value', async () => {
+      const response = await request(app)
+        .post('/api/devices/bulk-actions/delete')
+        .send({ ids: ['valid-id', ''] });
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toBe('Id at index 1 is required and must be a non-empty string');
+    });
+
+    it('should reject bulk create when device payload has unknown fields', async () => {
+      const { id: _id, ...device } = MOCK_DEVICES[0];
+      const response = await request(app)
+        .post('/api/devices/bulk-actions/create')
+        .send([{ ...device, extraField: 'nope' }]);
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toBe(
+        'Request body item at index 0 includes unknown field(s): extraField',
+      );
+    });
+
+    it('should reject device create when required fields are missing', async () => {
+      const response = await request(app).post('/api/devices').send({
+        manufacturer: 'Missing Name Co',
+        isDraft: true,
+      });
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toBe(
+        'Request body name is required and must be a non-empty string',
+      );
+    });
+
+    it('should reject device update with unknown fields', async () => {
+      const { id: _id, ...device } = MOCK_DEVICES[1];
+      const createResponse = await request(app).post('/api/devices').send(device);
+
+      const response = await request(app)
+        .put(`/api/devices/${createResponse.body.id}`)
+        .send({ unsupportedField: 'value' });
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toBe('Request body includes unknown field(s): unsupportedField');
     });
   });
 });

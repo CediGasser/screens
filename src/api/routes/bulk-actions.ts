@@ -1,27 +1,20 @@
 import { Router } from 'express';
 import * as devices from '../controllers/devices';
-import { DeviceDocument } from '../types';
-import { UnauthorizedError, ValidationError } from '../errors';
+import { UnauthorizedError } from '../errors';
+import {
+  validateBulkCreateDevicesPayload,
+  validateBulkDeleteDevicesPayload,
+  validateBulkUpdateDevicesPayload,
+} from '../validators/device';
 
 export const bulkActionsRouter = Router();
-
-interface BulkUpdateBody {
-  updates?: Array<{ id: string; data: Partial<DeviceDocument> }>;
-}
-
-interface BulkDeleteBody {
-  ids?: string[];
-}
 
 bulkActionsRouter.post('/update', async (req, res) => {
   ensureAuthenticated(req.user.authenticated);
 
-  const body = req.body as BulkUpdateBody;
-  if (!Array.isArray(body.updates)) {
-    throw new ValidationError('Request body must include an updates array');
-  }
+  const updates = validateBulkUpdateDevicesPayload(req.body);
 
-  const updatedDevices = await devices.bulkUpdateDevices(body.updates);
+  const updatedDevices = await devices.bulkUpdateDevices(updates);
   logAdminAction(`${req.user.username} bulk updated ${updatedDevices.length} devices`);
   return res.status(200).json(updatedDevices);
 });
@@ -29,12 +22,9 @@ bulkActionsRouter.post('/update', async (req, res) => {
 bulkActionsRouter.post('/delete', async (req, res) => {
   ensureAuthenticated(req.user.authenticated);
 
-  const body = req.body as BulkDeleteBody;
-  if (!Array.isArray(body.ids)) {
-    throw new ValidationError('Request body must include an ids array');
-  }
+  const ids = validateBulkDeleteDevicesPayload(req.body);
 
-  const deletedCount = await devices.bulkDeleteDevices(body.ids);
+  const deletedCount = await devices.bulkDeleteDevices(ids);
   logAdminAction(`${req.user.username} bulk deleted ${deletedCount} devices`);
   return res.status(200).json({ deletedCount });
 });
@@ -42,11 +32,9 @@ bulkActionsRouter.post('/delete', async (req, res) => {
 bulkActionsRouter.post('/create', async (req, res) => {
   ensureAuthenticated(req.user.authenticated);
 
-  if (!Array.isArray(req.body)) {
-    throw new ValidationError('Request body must be an array of devices');
-  }
+  const devicesToCreate = validateBulkCreateDevicesPayload(req.body);
 
-  const createdDevices = await devices.bulkCreateDevices(req.body as DeviceDocument[]);
+  const createdDevices = await devices.bulkCreateDevices(devicesToCreate);
   logAdminAction(`${req.user.username} bulk created ${createdDevices.length} devices`);
 
   return res.status(201).json(createdDevices);

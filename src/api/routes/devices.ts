@@ -1,7 +1,12 @@
 import { Router } from 'express';
 import * as devices from '../controllers/devices';
-import { Device, DeviceDocument, DeviceQueryFilters } from '../types';
+import { DeviceDocument } from '../types';
 import { NotFoundError, UnauthorizedError } from '../errors';
+import {
+  parseDeviceQueryFilters,
+  validateCreateDevicePayload,
+  validateUpdateDevicePayload,
+} from '../validators/device';
 
 export const devicesRouter = Router();
 
@@ -42,7 +47,7 @@ devicesRouter.get('/:id', async (req, res) => {
 devicesRouter.post('/', async (req, res) => {
   const isAuthenticated = req.user.authenticated;
 
-  const validatedCreateBody: Omit<Device, 'id'> = req.body; // TODO: Add validation logic here
+  const validatedCreateBody = validateCreateDevicePayload(req.body);
 
   if (!isAuthenticated && !validatedCreateBody.isDraft) {
     throw new UnauthorizedError('Cannot create published device');
@@ -60,7 +65,7 @@ devicesRouter.put('/:id', async (req, res) => {
     throw new UnauthorizedError('Unauthorized');
   }
 
-  const validatedUpdateBody: Partial<DeviceDocument> = req.body; // TODO: Add validation logic here
+  const validatedUpdateBody: Partial<DeviceDocument> = validateUpdateDevicePayload(req.body);
 
   const updatedDevice = await devices.updateDevice(req.params.id, validatedUpdateBody);
   if (!updatedDevice) {
@@ -82,61 +87,6 @@ devicesRouter.delete('/:id', async (req, res) => {
   logAdminAction(`${req.user.username} deleted device ${req.params.id}`);
   return res.status(204).send();
 });
-
-function parseDeviceQueryFilters(query: Record<string, unknown>): DeviceQueryFilters {
-  const type = readStringQuery(query['type']);
-  return {
-    isDraft: parseBooleanQuery(query['isDraft']),
-    manufacturer: readStringQuery(query['manufacturer']),
-    name: readStringQuery(query['name']),
-    type: isDeviceType(type) ? type : undefined,
-    releaseDateFrom: readStringQuery(query['releaseDateFrom']),
-    releaseDateTo: readStringQuery(query['releaseDateTo']),
-    screenSizeMin: parseNumberQuery(query['screenSizeMin']),
-    screenSizeMax: parseNumberQuery(query['screenSizeMax']),
-    screenPixelWidthMin: parseNumberQuery(query['screenPixelWidthMin']),
-    screenPixelWidthMax: parseNumberQuery(query['screenPixelWidthMax']),
-    screenPixelHeightMin: parseNumberQuery(query['screenPixelHeightMin']),
-    screenPixelHeightMax: parseNumberQuery(query['screenPixelHeightMax']),
-    pixelDensityMin: parseNumberQuery(query['pixelDensityMin']),
-    pixelDensityMax: parseNumberQuery(query['pixelDensityMax']),
-    screenCornerRadiusMin: parseNumberQuery(query['screenCornerRadiusMin']),
-    screenCornerRadiusMax: parseNumberQuery(query['screenCornerRadiusMax']),
-  };
-}
-
-function readStringQuery(value: unknown): string | undefined {
-  if (typeof value === 'string' && value.trim() !== '') return value.trim();
-  if (Array.isArray(value) && typeof value[0] === 'string' && value[0].trim() !== '') {
-    return value[0].trim();
-  }
-  return undefined;
-}
-
-function parseBooleanQuery(value: unknown): boolean | undefined {
-  const text = readStringQuery(value);
-  if (text === 'true') return true;
-  if (text === 'false') return false;
-  return undefined;
-}
-
-function parseNumberQuery(value: unknown): number | undefined {
-  const text = readStringQuery(value);
-  if (text == null) return undefined;
-  const parsed = Number(text);
-  return Number.isFinite(parsed) ? parsed : undefined;
-}
-
-function isDeviceType(value: unknown): value is Device['type'] {
-  return (
-    value === 'smartphone' ||
-    value === 'tablet' ||
-    value === 'laptop' ||
-    value === 'desktop' ||
-    value === 'wearable' ||
-    value === 'other'
-  );
-}
 
 function logAdminAction(text: string) {
   console.log(`[Admin Action] ${text}`);
