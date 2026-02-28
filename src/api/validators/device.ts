@@ -29,14 +29,6 @@ export interface DeviceBulkUpdatePayload {
   data: Partial<DeviceDocument>;
 }
 
-interface BulkUpdateBody {
-  updates?: any;
-}
-
-interface BulkDeleteBody {
-  ids?: unknown;
-}
-
 export function validateCreateDevicePayload(payload: unknown): DeviceDocument {
   return validateDeviceDocument(payload, 'Request body');
 }
@@ -56,14 +48,11 @@ export function validateBulkCreateDevicesPayload(payload: unknown): DeviceDocume
 }
 
 export function validateBulkUpdateDevicesPayload(payload: unknown): DeviceBulkUpdatePayload[] {
-  if (!isPlainObject(payload)) {
-    throw new ValidationError('Request body must be an object containing an updates array');
+  if (!Array.isArray(payload)) {
+    throw new ValidationError('Request body must be an array of device updates');
   }
 
-  const { updates } = payload as BulkUpdateBody;
-  if (!Array.isArray(updates)) {
-    throw new ValidationError('Request body must include an updates array');
-  }
+  const updates = payload as any[];
 
   return updates.map((update, index) => {
     if (!isPlainObject(update)) {
@@ -78,14 +67,11 @@ export function validateBulkUpdateDevicesPayload(payload: unknown): DeviceBulkUp
 }
 
 export function validateBulkDeleteDevicesPayload(payload: unknown): string[] {
-  if (!isPlainObject(payload)) {
-    throw new ValidationError('Request body must be an object containing an ids array');
+  if (!Array.isArray(payload)) {
+    throw new ValidationError('Request body must be an array of device IDs to delete');
   }
 
-  const { ids } = payload as BulkDeleteBody;
-  if (!Array.isArray(ids)) {
-    throw new ValidationError('Request body must include an ids array');
-  }
+  const ids = payload as any[];
 
   return ids.map((id, index) => readRequiredString(id, `Id at index ${index}`));
 }

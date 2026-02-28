@@ -1,0 +1,12 @@
+manufacturer,name,type,releaseDate,screenSize,screenPixelHeight,screenPixelWidth,screenCornerRadius
+Apple,iPhone 12,smartphone,2020-10-23,6.1,2532,1170,20
+Samsung,Galaxy S21,smartphone,2021-01-29,6.2,2400,1080,20
+Google,Pixel 5,smartphone,2020-10-15,6.0,2340,1080,0
+Apple,iPad Pro,tablet,2020-03-25,12.9,2732,2048,20
+Microsoft,Surface Pro 7,laptop,2019-10-02,12.3,2736,1824,0
+Dell,XPS 13,laptop,2020-09-30,13.4,1920,1200,0
+Lenovo,ThinkPad X1 Carbon,laptop,2020-01-07,14,1920,1080,0
+Samsung,Galaxy Tab S7,tablet,2020-08-05,11,2560,1600,20
+Apple,MacBook Air 2020,laptop,2020-11-17,13.3,2560,1600,0
+Google,Pixel Slate,tablet,2018-10-09,12.3,3000,2000,0
+Google,Pixel 4a,smartphone,2020-08-20,5.8,2340,1080,0

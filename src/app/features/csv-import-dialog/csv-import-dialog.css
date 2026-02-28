@@ -1,0 +1,44 @@
+.csv-import-content {
+  display: grid;
+  gap: var(--space-m);
+
+  pre {
+    margin: 0;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    border: var(--fieldBorderWidth) solid var(--c-fieldBorder);
+    border-radius: var(--radius);
+    padding: var(--space-s);
+    font-size: var(--text-xs);
+  }
+}
+
+.errors {
+  border: var(--fieldBorderWidth) solid var(--c-error);
+  border-radius: var(--radius);
+  padding: var(--space-s);
+
+  strong {
+    display: block;
+    margin-bottom: var(--space-s);
+  }
+
+  ul {
+    margin: 0;
+    padding-left: var(--space-l);
+    display: grid;
+    gap: var(--space-xs);
+  }
+}
+
+.csv-success {
+  margin: 0;
+}
+
+.csv-import-actions {
+  margin-top: var(--space-l);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-s);
+}

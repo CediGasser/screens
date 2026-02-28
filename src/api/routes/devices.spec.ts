@@ -597,9 +597,7 @@ describe('Devices API routes', () => {
         { id: createResponse2.body.id, data: { manufacturer: 'Bulk Updated Co' } },
       ];
 
-      const response = await request(app)
-        .post('/api/devices/bulk-actions/update')
-        .send({ updates });
+      const response = await request(app).post('/api/devices/bulk-actions/update').send(updates);
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveLength(2);
@@ -616,7 +614,7 @@ describe('Devices API routes', () => {
       const createResponse2 = await request(app).post('/api/devices').send(device2);
 
       const ids = [createResponse1.body.id, createResponse2.body.id];
-      const response = await request(app).post('/api/devices/bulk-actions/delete').send({ ids });
+      const response = await request(app).post('/api/devices/bulk-actions/delete').send(ids);
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual({ deletedCount: 2 });
@@ -655,21 +653,17 @@ describe('Devices API routes', () => {
     it('should require authentication for bulk action routes', async () => {
       setUnauthenticated();
 
-      const response = await request(app)
-        .post('/api/devices/bulk-actions/delete')
-        .send({ ids: [] });
+      const response = await request(app).post('/api/devices/bulk-actions/delete').send([]);
 
       expect(response.status).toBe(401);
       expect(response.body.error).toBe('Unauthorized');
     });
 
     it('should reject bulk update when updates is not an array', async () => {
-      const response = await request(app)
-        .post('/api/devices/bulk-actions/update')
-        .send({ updates: 'invalid' });
+      const response = await request(app).post('/api/devices/bulk-actions/update').send('invalid');
 
       expect(response.status).toBe(400);
-      expect(response.body.error).toBe('Request body must include an updates array');
+      expect(response.body.error).toBe('Request body must be an array of device updates');
     });
 
     it('should reject bulk update when an update entry has no fields to update', async () => {
@@ -678,7 +672,7 @@ describe('Devices API routes', () => {
 
       const response = await request(app)
         .post('/api/devices/bulk-actions/update')
-        .send({ updates: [{ id: createResponse.body.id, data: {} }] });
+        .send([{ id: createResponse.body.id, data: {} }]);
 
       expect(response.status).toBe(400);
       expect(response.body.error).toBe(
@@ -687,18 +681,16 @@ describe('Devices API routes', () => {
     });
 
     it('should reject bulk delete when ids is not an array', async () => {
-      const response = await request(app)
-        .post('/api/devices/bulk-actions/delete')
-        .send({ ids: 'invalid' });
+      const response = await request(app).post('/api/devices/bulk-actions/delete').send('invalid');
 
       expect(response.status).toBe(400);
-      expect(response.body.error).toBe('Request body must include an ids array');
+      expect(response.body.error).toBe('Request body must be an array of device IDs to delete');
     });
 
     it('should reject bulk delete when ids contains invalid value', async () => {
       const response = await request(app)
         .post('/api/devices/bulk-actions/delete')
-        .send({ ids: ['valid-id', ''] });
+        .send(['valid-id', '']);
 
       expect(response.status).toBe(400);
       expect(response.body.error).toBe('Id at index 1 is required and must be a non-empty string');

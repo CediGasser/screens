@@ -2,6 +2,10 @@ h2 {
   margin-bottom: var(--space-m);
 }
 
+.top-actions {
+  margin-bottom: var(--space-m);
+}
+
 .bulk-actions {
   margin-top: var(--space-m);
   display: flex;

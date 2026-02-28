@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { forkJoin, Observable, of } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { DeviceFilters, deviceFiltersToQueryParams } from './device-filters';
 
 export const DEVICE_TYPE_OPTIONS = {
@@ -99,18 +99,16 @@ export class DevicesApi {
   bulkUpdateDevices(
     updates: { id: string; data: Partial<DeviceFormData> }[],
   ): Observable<Device[]> {
-    if (updates.length === 0) {
-      return of([]);
-    }
-
-    return forkJoin(updates.map(({ id, data }) => this.updateDevice(id, data)));
+    return this.http.post<Device[]>('/api/devices/bulk-actions/update', updates);
   }
 
   bulkDeleteDevices(ids: string[]): Observable<void[]> {
-    if (ids.length === 0) {
-      return of([]);
-    }
+    return this.http
+      .post<{ deletedCount: number }>('/api/devices/bulk-actions/delete', ids)
+      .pipe(map(({ deletedCount }) => Array.from({ length: deletedCount }, () => undefined)));
+  }
 
-    return forkJoin(ids.map((id) => this.deleteDevice(id)));
+  bulkCreateDevices(creates: DeviceFormData[]): Observable<Device[]> {
+    return this.http.post<Device[]>('/api/devices/bulk-actions/create', creates);
   }
 }

@@ -2,6 +2,7 @@ import { Component, computed, Signal, signal, viewChild } from '@angular/core';
 import { Device, DevicesApi } from '../../../services/devices-api';
 import { DevicesTable } from '../../../features/devices-table/devices-table';
 import { DeviceFormDialog } from '../../../features/device-form-dialog/device-form-dialog';
+import { CsvImportDialog } from '../../../features/csv-import-dialog/csv-import-dialog';
 import { DevicesFilter } from '../../../features/devices-filter/devices-filter';
 import {
   DeviceFilters,
@@ -15,9 +16,12 @@ import { LucideAngularModule, Check, Pencil, Trash } from 'lucide-angular';
 
 @Component({
   selector: 'app-suggestions',
-  imports: [DevicesFilter, DevicesTable, DeviceFormDialog, LucideAngularModule],
+  imports: [DevicesFilter, DevicesTable, DeviceFormDialog, CsvImportDialog, LucideAngularModule],
   template: `
     <h2>Suggested Devices</h2>
+    <div class="top-actions">
+      <button type="button" class="secondary" (click)="openCsvImportDialog()">Import CSV</button>
+    </div>
     <app-devices-filter [filters]="filters()" (filtersChange)="onFiltersChange($event)" />
     <app-devices-table #devicesTable [devices]="devices()" [enableSelection]="true">
       <ng-template #actions let-device>
@@ -45,6 +49,8 @@ import { LucideAngularModule, Check, Pencil, Trash } from 'lucide-angular';
     }
 
     <app-device-form-dialog #deviceFormDialog (deviceUpdated)="onDeviceUpdated($event)" />
+
+    <app-csv-import-dialog #csvImportDialog (importSuccess)="onCsvImportSuccess($event)" />
   `,
   styleUrl: './suggestions.css',
 })
@@ -56,6 +62,7 @@ export class Suggestions {
   protected devices: Signal<Device[]>;
   protected filters: Signal<DeviceFilters>;
   protected deviceFormDialog = viewChild.required<DeviceFormDialog>('deviceFormDialog');
+  protected csvImportDialog = viewChild.required<CsvImportDialog>('csvImportDialog');
   private devicesTable = viewChild<DevicesTable>('devicesTable');
   protected selectedDevices = computed(() => this.devicesTable()?.selection() ?? []);
   protected selectedDevicesCount = computed(() => this.selectedDevices().length);
@@ -134,6 +141,14 @@ export class Suggestions {
         error: (err) => console.error('Failed to delete selected devices:', err),
       });
     }
+  }
+
+  openCsvImportDialog() {
+    this.csvImportDialog().open();
+  }
+
+  onCsvImportSuccess(_createdCount: number) {
+    this.refreshTick.update((value) => value + 1);
   }
 
   onDeviceUpdated(_device: Device) {
