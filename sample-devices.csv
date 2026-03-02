@@ -1,6 +1,25 @@
 manufacturer,name,type,releaseDate,screenSize,screenPixelHeight,screenPixelWidth,screenCornerRadius
-Apple,iPhone 12,smartphone,2020-10-23,6.1,2532,1170,20
-Samsung,Galaxy S21,smartphone,2021-01-29,6.2,2400,1080,20
+Apple,iPhone 12,smartphone,2021-01-08,6.10,1170,2532,20
+Apple,iPhone 13,smartphone,2021-09-21,6.10,1170,2532,20
+Apple,iPhone 14,smartphone,2022-09-12,6.10,1170,2532,20
+Apple,iPhone 15,smartphone,2023-09-17,6.10,1179,2556,20
+Apple,iPhone 15 Pro Max,smartphone,2023-09-17,6.70,1290,2796,20
+Apple,iPhone 16,smartphone,2024-09-14,6.10,1179,2556,20
+Apple,iPhone 16 Pro,smartphone,2024-09-14,6.30,1206,2622,20
+Apple,iPhone 16 Pro Max,smartphone,2024-09-14,6.90,1320,2868,20
+Apple,iPhone 16e,smartphone,2025-02-20,6.10,1170,2532,20
+Apple,iPhone 17,smartphone,2025-09-11,6.30,1206,2622,20
+Apple,iPhone 17 Pro Max,smartphone,2025-09-11,6.90,1320,2868,20
+Samsung,Galaxy S6,smartphone,2015-04-10,5.1,1440,2560,20
+Samsung,Galaxy S7,smartphone,2016-02-21,5.1,1440,2560,20
+Samsung,Galaxy S8,smartphone,2017-04-21,5.8,1440,2960,20
+Samsung,Galaxy S9,smartphone,2018-02-25,5.8,1440,2960,20
+Samsung,Galaxy S10,smartphone,2019-03-08,6.1,1440,3040,20
+Samsung,Galaxy S21,smartphone,2021-01-29,6.2,1080,2400,20
+Samsung,Galaxy S25,smartphone,2025-01-21,6.2,1080,2340,20
+Samsung,Galaxy S25 Ultra,smartphone,2025-01-21,6.9,1440,3120,20
+Samsung,Galaxy S26,smartphone,2026-02-25,6.3,1080,2340,20
+Samsung,Galaxy S26 Ultra,smartphone,2026-02-25,6.9,1440,3120,20
 Google,Pixel 5,smartphone,2020-10-15,6.0,2340,1080,0
 Apple,iPad Pro,tablet,2020-03-25,12.9,2732,2048,20
 Microsoft,Surface Pro 7,laptop,2019-10-02,12.3,2736,1824,0
@@ -10,3 +29,4 @@ Samsung,Galaxy Tab S7,tablet,2020-08-05,11,2560,1600,20
 Apple,MacBook Air 2020,laptop,2020-11-17,13.3,2560,1600,0
 Google,Pixel Slate,tablet,2018-10-09,12.3,3000,2000,0
 Google,Pixel 4a,smartphone,2020-08-20,5.8,2340,1080,0
+Samsung,Galaxy Watch 3,wearable,2020-08-05,1.4,360,360,300
