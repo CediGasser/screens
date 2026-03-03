@@ -8,6 +8,11 @@ export const routes: Routes = [
     title: 'Screens',
   },
   {
+    path: 'data',
+    loadComponent: () => import('./pages/data/data').then((m) => m.Data),
+    title: 'Device Data',
+  },
+  {
     path: 'admin',
     loadComponent: () => import('./pages/admin/admin').then((m) => m.Admin),
     title: 'Admin',
