@@ -1,0 +1,124 @@
+:host {
+  display: block;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ─── Date label ─── */
+
+.date-label {
+  text-align: center;
+  font-size: var(--text-xs);
+  color: var(--c-body);
+  padding: var(--space-s) 0;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  min-height: 1.5em;
+}
+
+/* ─── Track wrapper ─── */
+
+.track-wrapper {
+  position: relative;
+  border-radius: var(--radius);
+  background-color: var(--c-overlay);
+  border: 1px solid var(--c-border);
+  overflow: hidden;
+}
+
+.track-viewport {
+  display: block;
+}
+
+.track-viewport.scrollable {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  touch-action: pan-x;
+}
+
+.track-viewport svg {
+  display: block;
+}
+
+/* ─── SVG: row backgrounds ─── */
+
+.row-bg {
+  fill: transparent;
+}
+
+.row-bg-alt {
+  fill: var(--c-overlay);
+}
+
+/* ─── SVG: category labels ─── */
+
+.category-label {
+  font-size: 10px;
+  font-family: 'Roboto Mono', monospace;
+  fill: var(--c-bodyDimmed);
+  pointer-events: none;
+}
+
+/* ─── SVG: year scale ─── */
+
+.scale-baseline {
+  stroke: var(--c-border);
+  stroke-width: 1;
+}
+
+.tick-line {
+  stroke: var(--c-grey4);
+  stroke-width: 1;
+}
+
+.year-label {
+  font-size: 10px;
+  font-family: 'Roboto Mono', monospace;
+  fill: var(--c-bodyDimmed);
+}
+
+/* ─── SVG: device dots ─── */
+
+.device-dot {
+  fill: var(--c-grey4);
+  opacity: 0.4;
+  transition:
+    opacity 0.15s ease,
+    fill 0.15s ease;
+}
+
+.device-dot.highlighted {
+  fill: var(--c-accent);
+  opacity: 1;
+}
+
+/* ─── SVG: position indicator (desktop) ─── */
+
+.position-line {
+  stroke: var(--c-accent);
+  stroke-width: 2;
+  pointer-events: none;
+}
+
+.handle-thumb {
+  fill: var(--c-accent);
+  stroke: var(--c-background);
+  stroke-width: 2;
+  cursor: ew-resize;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.15));
+}
+
+/* ─── Mobile indicator overlay ─── */
+
+.mobile-indicator {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  transform: translateX(-50%);
+  background-color: var(--c-accent);
+  pointer-events: none;
+  z-index: 1;
+}

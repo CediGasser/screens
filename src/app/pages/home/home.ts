@@ -1,29 +1,35 @@
-import { Component, signal, Signal, viewChild } from '@angular/core';
-import { DevicesTable } from '../../features/devices-table/devices-table';
+import { Component, computed, signal, Signal, viewChild } from '@angular/core';
 import { Device, DevicesApi } from '../../services/devices-api';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { DeviceFormDialog } from '../../features/device-form-dialog/device-form-dialog';
-import { DevicesFilter } from '../../features/devices-filter/devices-filter';
+import { TimeAxis } from '../../features/time-axis/time-axis';
+
 import {
-  DeviceFilters,
-  deviceFiltersFromParamMap,
-  deviceFiltersToQueryParams,
-} from '../../services/device-filters';
-import { ActivatedRoute, Router } from '@angular/router';
-import { debounceTime, map, switchMap } from 'rxjs';
+  ScreenSizeMap,
+  computeScreenSizeBounds,
+} from '../../features/screen-size-map/screen-size-map';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-home',
-  imports: [DevicesFilter, DevicesTable, DeviceFormDialog],
+  imports: [DeviceFormDialog, TimeAxis, ScreenSizeMap, RouterLink],
   template: `
     <main class="letter-box">
       <header>
-        <h1>Devices</h1>
-        <button class="primary" (click)="openSuggestDialog()">Suggest a Device</button>
+        <h1>Screens</h1>
+        <div class="header-actions">
+          <a routerLink="/data" class="nav-link">Data Table &rarr;</a>
+          <button class="primary" (click)="openSuggestDialog()">Suggest a Device</button>
+        </div>
       </header>
       <section>
-        <app-devices-filter [filters]="filters()" (filtersChange)="onFiltersChange($event)" />
-        <app-devices-table [devices]="devices()"></app-devices-table>
+        <app-screen-size-map [devices]="displayedDevices()" [bounds]="bounds()" />
+
+        <app-time-axis
+          [devices]="devices()"
+          [highlightedDeviceIds]="highlightedDeviceIds()"
+          (selectedDate)="onSelectedDateChange($event)"
+        />
       </section>
 
       <app-device-form-dialog #deviceFormDialog (deviceCreated)="onDeviceCreated($event)" />
@@ -32,44 +38,44 @@ import { debounceTime, map, switchMap } from 'rxjs';
   styleUrl: './home.css',
 })
 export class Home {
-  protected title = signal('Device Catalog');
   protected devices: Signal<Device[]>;
-  protected filters: Signal<DeviceFilters>;
+  protected selectedDate = signal('');
   protected deviceFormDialog = viewChild.required<DeviceFormDialog>('deviceFormDialog');
 
-  constructor(
-    private devicesApi: DevicesApi,
-    private route: ActivatedRoute,
-    private router: Router,
-  ) {
-    this.filters = toSignal(
-      this.route.queryParamMap.pipe(map((paramMap) => deviceFiltersFromParamMap(paramMap))),
-      { initialValue: deviceFiltersFromParamMap(this.route.snapshot.queryParamMap) },
-    );
+  /** Fixed bounds computed from ALL devices so the scale never shifts. */
+  protected bounds = computed(() => computeScreenSizeBounds(this.devices()));
 
-    this.devices = toSignal(
-      toObservable(this.filters).pipe(
-        debounceTime(250),
-        switchMap((filters) => this.devicesApi.getPublishedDevices(filters)),
-      ),
-      { initialValue: [] },
-    );
-  }
+  /** Number of most-recent devices to display in the visual map. */
+  private readonly DISPLAY_COUNT = 5;
 
-  onFiltersChange(filters: DeviceFilters) {
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: deviceFiltersToQueryParams(filters),
-      replaceUrl: true,
-    });
+  /** The N most recently released devices up to the selected date. */
+  protected displayedDevices = computed(() => {
+    const date = this.selectedDate();
+    if (!date) return [];
+    return [...this.devices()]
+      .filter((d) => d.releaseDate <= date)
+      .sort((a, b) => b.releaseDate.localeCompare(a.releaseDate))
+      .slice(0, this.DISPLAY_COUNT);
+  });
+
+  /** IDs of displayed devices — used for highlighting dots on the time axis. */
+  protected highlightedDeviceIds = computed(() => {
+    return this.displayedDevices().map((d) => d.id);
+  });
+
+  constructor(private devicesApi: DevicesApi) {
+    this.devices = toSignal(this.devicesApi.getPublishedDevices(), { initialValue: [] });
   }
 
   openSuggestDialog() {
     this.deviceFormDialog().openForCreate(true);
   }
 
+  onSelectedDateChange(date: string) {
+    this.selectedDate.set(date);
+  }
+
   onDeviceCreated(device: Device) {
-    // Device was submitted as a suggestion (draft)
     console.log('Device suggestion submitted:', device);
   }
 }
