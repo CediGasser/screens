@@ -22,8 +22,8 @@ export interface Device {
   releaseDate: string;
   /** Screen diagonal in inches */
   screenSize: number;
-  screenPixelHeight: number;
   screenPixelWidth: number;
+  screenPixelHeight: number;
   screenCornerRadius: number;
   isDraft: boolean;
 }

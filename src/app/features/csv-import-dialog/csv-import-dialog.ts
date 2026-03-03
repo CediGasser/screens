@@ -71,7 +71,7 @@ export class CsvImportDialog {
   protected csvImportInProgress = signal(false);
   protected validationErrors = signal<string[]>([]);
   protected requiredCsvFormat =
-    'manufacturer,name,type,releaseDate,screenSize,screenPixelHeight,screenPixelWidth,screenCornerRadius';
+    'manufacturer,name,type,releaseDate,screenSize,screenPixelWidth,screenPixelHeight,screenCornerRadius';
   protected validatedData: DeviceFormData[] = [];
 
   constructor(
