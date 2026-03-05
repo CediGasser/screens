@@ -1,5 +1,16 @@
 manufacturer,name,type,releaseDate,screenSize,screenPixelWidth,screenPixelHeight,screenCornerRadius
+Apple,iPhone 5,smartphone,2012-09-21,4.0,640,1136,0
+Samsung,Galaxy S4,smartphone,2013-04-27,5.0,1080,1920,0
+Samsung,Galaxy S6,smartphone,2015-04-10,5.1,1440,2560,20
+Samsung,Galaxy S7,smartphone,2016-02-21,5.1,1440,2560,20
+Samsung,Galaxy S8,smartphone,2017-04-21,5.8,1440,2960,20
+Google,Pixel 2,smartphone,2017-10-19,5.0,1080,1920,0
+Samsung,Galaxy S9,smartphone,2018-02-25,5.8,1440,2960,20
+Samsung,Galaxy S10,smartphone,2019-03-08,6.1,1440,3040,20
+Google,Pixel 4a,smartphone,2020-08-20,5.8,1080,2340,0
+Google,Pixel 5,smartphone,2020-10-15,6.0,1080,2340,0
 Apple,iPhone 12,smartphone,2021-01-08,6.10,1170,2532,20
+Samsung,Galaxy S21,smartphone,2021-01-29,6.2,1080,2400,20
 Apple,iPhone 13,smartphone,2021-09-21,6.10,1170,2532,20
 Apple,iPhone 14,smartphone,2022-09-12,6.10,1170,2532,20
 Apple,iPhone 15,smartphone,2023-09-17,6.10,1179,2556,20
@@ -7,26 +18,61 @@ Apple,iPhone 15 Pro Max,smartphone,2023-09-17,6.70,1290,2796,20
 Apple,iPhone 16,smartphone,2024-09-14,6.10,1179,2556,20
 Apple,iPhone 16 Pro,smartphone,2024-09-14,6.30,1206,2622,20
 Apple,iPhone 16 Pro Max,smartphone,2024-09-14,6.90,1320,2868,20
+Samsung,Galaxy S25,smartphone,2025-01-21,6.2,1080,2340,20
+Samsung,Galaxy S25 Ultra,smartphone,2025-01-21,6.9,1440,3120,20
 Apple,iPhone 16e,smartphone,2025-02-20,6.10,1170,2532,20
 Apple,iPhone 17,smartphone,2025-09-11,6.30,1206,2622,20
 Apple,iPhone 17 Pro Max,smartphone,2025-09-11,6.90,1320,2868,20
-Samsung,Galaxy S6,smartphone,2015-04-10,5.1,1440,2560,20
-Samsung,Galaxy S7,smartphone,2016-02-21,5.1,1440,2560,20
-Samsung,Galaxy S8,smartphone,2017-04-21,5.8,1440,2960,20
-Samsung,Galaxy S9,smartphone,2018-02-25,5.8,1440,2960,20
-Samsung,Galaxy S10,smartphone,2019-03-08,6.1,1440,3040,20
-Samsung,Galaxy S21,smartphone,2021-01-29,6.2,1080,2400,20
-Samsung,Galaxy S25,smartphone,2025-01-21,6.2,1080,2340,20
-Samsung,Galaxy S25 Ultra,smartphone,2025-01-21,6.9,1440,3120,20
 Samsung,Galaxy S26,smartphone,2026-02-25,6.3,1080,2340,20
 Samsung,Galaxy S26 Ultra,smartphone,2026-02-25,6.9,1440,3120,20
-Google,Pixel 5,smartphone,2020-10-15,6.0,1080,2340,0
-Apple,iPad Pro,tablet,2020-03-25,12.9,2732,2048,20
-Microsoft,Surface Pro 7,laptop,2019-10-02,12.3,2736,1824,0
-Dell,XPS 13,laptop,2020-09-30,13.4,1920,1200,0
-Lenovo,ThinkPad X1 Carbon,laptop,2020-01-07,14,1920,1080,0
-Samsung,Galaxy Tab S7,tablet,2020-08-05,11,2560,1600,20
-Apple,MacBook Air 2020,laptop,2020-11-17,13.3,2560,1600,0
+Apple,iPad 1st Gen,tablet,2010-04-03,9.7,1024,768,0
+Apple,iPad 3rd Gen,tablet,2012-03-16,9.7,2048,1536,0
+Apple,iPad Air,tablet,2013-11-01,9.7,2048,1536,0
+Apple,iPad Air 2,tablet,2014-10-22,9.7,2048,1536,0
+Apple,iPad Pro 12.9 1st Gen,tablet,2015-11-11,12.9,2732,2048,0
+Apple,iPad Pro 10.5,tablet,2017-06-13,10.5,2224,1668,0
 Google,Pixel Slate,tablet,2018-10-09,12.3,3000,2000,0
-Google,Pixel 4a,smartphone,2020-08-20,5.8,1080,2340,0
-Samsung,Galaxy Watch 3,wearable,2020-08-05,1.4,360,360,300
+Apple,iPad Pro 11 1st Gen,tablet,2018-11-07,11,2388,1668,20
+Samsung,Galaxy Tab S6,tablet,2019-08-23,10.5,2560,1600,0
+Apple,iPad Pro 12.9 4th Gen,tablet,2020-03-25,12.9,2732,2048,20
+Samsung,Galaxy Tab S7,tablet,2020-08-05,11,2560,1600,20
+Apple,iPad Air 4th Gen,tablet,2020-10-23,10.9,2360,1640,20
+Apple,iPad Mini 6th Gen,tablet,2021-09-24,8.3,2266,1488,20
+Samsung,Galaxy Tab S8 Ultra,tablet,2022-02-25,14.6,2960,1848,0
+Microsoft,Surface Pro 9,tablet,2022-10-25,13,2880,1920,0
+Apple,iPad Pro 13 M4,tablet,2024-05-15,13,2752,2064,20
+Apple,iPad Air 13 M3,tablet,2025-03-12,13,2732,2048,20
+Apple,MacBook Air 2010,laptop,2010-10-20,13.3,1440,900,0
+Lenovo,ThinkPad X1 Carbon 1st Gen,laptop,2012-08-21,14,1600,900,0
+Dell,XPS 13 9343,laptop,2015-01-06,13.3,3200,1800,0
+Apple,MacBook Pro 15 Retina,laptop,2015-05-19,15.4,2880,1800,0
+Lenovo,ThinkPad X1 Carbon 5th Gen,laptop,2017-02-01,14,1920,1080,0
+Apple,MacBook Air Retina,laptop,2018-11-07,13.3,2560,1600,0
+Microsoft,Surface Pro 7,laptop,2019-10-02,12.3,2736,1824,0
+Lenovo,ThinkPad X1 Carbon Gen 8,laptop,2020-01-07,14,1920,1080,0
+Dell,XPS 13 9310,laptop,2020-09-30,13.4,1920,1200,0
+Apple,MacBook Air M1,laptop,2020-11-17,13.3,2560,1600,0
+Dell,XPS 15 9510,laptop,2021-05-01,15.6,3840,2400,0
+Apple,MacBook Pro 14 M1 Pro,laptop,2021-10-26,14.2,3024,1964,0
+Lenovo,ThinkPad X1 Carbon Gen 10,laptop,2022-03-01,14,1920,1200,0
+Dell,XPS 13 Plus 9320,laptop,2022-03-01,13.4,1920,1200,0
+Apple,MacBook Air M2,laptop,2022-07-15,13.6,2560,1664,0
+Dell,XPS 14 9440,laptop,2024-03-01,14.5,1920,1200,0
+Apple,MacBook Air M4,laptop,2025-03-12,13.6,2560,1664,0
+Apple,Watch 1st Gen 42mm,wearable,2015-04-24,1.53,312,390,0
+Apple,Watch Series 2 42mm,wearable,2016-09-16,1.53,312,390,0
+Apple,Watch Series 3 42mm,wearable,2017-09-22,1.53,312,390,0
+Samsung,Galaxy Watch 46mm,wearable,2018-08-24,1.3,360,360,180
+Apple,Watch Series 4 44mm,wearable,2018-09-21,1.76,368,448,0
+Samsung,Galaxy Watch Active,wearable,2019-03-08,1.1,360,360,180
+Apple,Watch Series 5 44mm,wearable,2019-09-25,1.76,368,448,0
+Samsung,Galaxy Watch 3,wearable,2020-08-05,1.4,360,360,180
+Apple,Watch SE 40mm,wearable,2020-09-18,1.55,324,394,0
+Samsung,Galaxy Watch4 40mm,wearable,2021-08-27,1.19,396,396,198
+Apple,Watch Series 7 45mm,wearable,2021-10-15,1.9,396,484,0
+Samsung,Galaxy Watch5 44mm,wearable,2022-08-26,1.39,450,450,225
+Apple,Watch Ultra,wearable,2022-09-23,1.94,410,502,0
+Samsung,Galaxy Watch6 44mm,wearable,2023-08-11,1.46,480,480,240
+Apple,Watch Series 9 45mm,wearable,2023-09-22,1.9,396,484,0
+Samsung,Galaxy Watch7 44mm,wearable,2024-07-19,1.47,480,480,240
+Apple,Watch Series 10 46mm,wearable,2024-09-20,1.96,416,496,0
