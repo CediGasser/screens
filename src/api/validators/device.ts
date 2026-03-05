@@ -1,14 +1,7 @@
 import { Device, DeviceDocument, DeviceQueryFilters } from '../types';
 import { ValidationError } from '../errors';
 
-const DEVICE_TYPES: Device['type'][] = [
-  'smartphone',
-  'tablet',
-  'laptop',
-  'desktop',
-  'wearable',
-  'other',
-];
+const DEVICE_TYPES: Device['type'][] = ['smartphone', 'tablet', 'laptop', 'wearable'];
 
 type DeviceField = keyof DeviceDocument;
 

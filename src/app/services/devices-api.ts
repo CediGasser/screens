@@ -7,9 +7,7 @@ export const DEVICE_TYPE_OPTIONS = {
   smartphone: 'Smartphone',
   tablet: 'Tablet',
   laptop: 'Laptop',
-  desktop: 'Desktop',
   wearable: 'Wearable',
-  other: 'Other',
 } as const;
 
 export type DeviceType = keyof typeof DEVICE_TYPE_OPTIONS;

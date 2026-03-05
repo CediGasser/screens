@@ -29,9 +29,7 @@ const CATEGORY_ORDER: DeviceType[] = [
   'smartphone',
   'tablet',
   'laptop',
-  'desktop',
   'wearable',
-  'other',
 ];
 
 // ─── Internal types ──────────────────────────────────────────────────────────

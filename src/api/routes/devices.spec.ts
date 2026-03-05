@@ -346,7 +346,7 @@ describe('Devices API routes', () => {
       const publishedMetaDevice = {
         manufacturer: 'Meta-Published-Co',
         name: 'Meta Published Device',
-        type: 'desktop' as const,
+        type: 'wearable' as const,
         releaseDate: '2030-01-01',
         screenSize: 100,
         screenPixelHeight: 5000,

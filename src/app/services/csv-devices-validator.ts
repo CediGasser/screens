@@ -16,9 +16,7 @@ const ALLOWED_DEVICE_TYPES: DeviceType[] = [
   'smartphone',
   'tablet',
   'laptop',
-  'desktop',
   'wearable',
-  'other',
 ];
 
 interface ParsedCsvRow {

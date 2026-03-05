@@ -2,7 +2,7 @@ export interface Device {
   id: string;
   manufacturer: string;
   name: string;
-  type: 'smartphone' | 'tablet' | 'laptop' | 'desktop' | 'wearable' | 'other';
+  type: 'smartphone' | 'tablet' | 'laptop' | 'wearable';
   releaseDate: string;
   /** Screen diagonal in inches */
   screenSize: number;

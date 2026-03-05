@@ -76,7 +76,7 @@ describe('CsvDevicesValidator', () => {
     expect(result.devices).toEqual([]);
     expect(result.errors).toEqual([
       'Row 2: name is required.',
-      'Row 2: type must be one of smartphone, tablet, laptop, desktop, wearable, other. Received "phone".',
+      'Row 2: type must be one of smartphone, tablet, laptop, wearable. Received "phone".',
       'Row 2: releaseDate must be in YYYY-MM-DD format.',
       'Row 2: screenSize must be a number.',
       'Row 2: screenPixelWidth must be a number.',
