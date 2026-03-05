@@ -5,10 +5,6 @@
 .map-container {
   position: relative;
   width: 100%;
-  border-radius: var(--radius);
-  background-color: var(--c-overlay);
-  border: 1px solid var(--c-border);
-  overflow: hidden;
 }
 
 .map-container svg {

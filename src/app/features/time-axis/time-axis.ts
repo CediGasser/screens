@@ -442,8 +442,10 @@ export class TimeAxis implements OnDestroy {
   protected onTrackScroll() {
     if (!this.isMobile()) return;
     const container = this.trackContainer().nativeElement;
-    const centerX = container.scrollLeft + container.clientWidth / 2;
-    this.currentDateIndex.set(this.xToDateIndex(centerX));
+    // The SVG has margin-inline: 50%, so the SVG origin is offset by
+    // half the container width. The center of the viewport in SVG
+    // coordinates simplifies to just scrollLeft.
+    this.currentDateIndex.set(this.xToDateIndex(container.scrollLeft));
   }
 
   // ─── Setup helpers ───────────────────────────────────────────────────

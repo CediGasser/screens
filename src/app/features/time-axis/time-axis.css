@@ -41,6 +41,10 @@
   display: block;
 }
 
+.track-viewport.scrollable svg {
+  margin-inline: 50%;
+}
+
 /* ─── SVG: row backgrounds ─── */
 
 .row-bg {

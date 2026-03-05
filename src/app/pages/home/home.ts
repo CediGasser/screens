@@ -4,10 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { DeviceFormDialog } from '../../features/device-form-dialog/device-form-dialog';
 import { TimeAxis } from '../../features/time-axis/time-axis';
 
-import {
-  ScreenSizeMap,
-  computeScreenSizeBounds,
-} from '../../features/screen-size-map/screen-size-map';
+import { ScreenSizeMap } from '../../features/screen-size-map/screen-size-map';
 import { RouterLink } from '@angular/router';
 
 @Component({
@@ -23,7 +20,7 @@ import { RouterLink } from '@angular/router';
         </div>
       </header>
       <section>
-        <app-screen-size-map [devices]="displayedDevices()" [bounds]="bounds()" />
+        <app-screen-size-map [devices]="devices()" [selectedDevices]="highlightedDeviceIds()" />
 
         <app-time-axis
           [devices]="devices()"
@@ -41,9 +38,6 @@ export class Home {
   protected devices: Signal<Device[]>;
   protected selectedDate = signal('');
   protected deviceFormDialog = viewChild.required<DeviceFormDialog>('deviceFormDialog');
-
-  /** Fixed bounds computed from ALL devices so the scale never shifts. */
-  protected bounds = computed(() => computeScreenSizeBounds(this.devices()));
 
   /** Number of most-recent devices to display in the visual map. */
   private readonly DISPLAY_COUNT = 5;

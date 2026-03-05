@@ -10,10 +10,10 @@ const MIN_VIEWBOX_HEIGHT = 200;
 const LABEL_OFFSET_Y = 14;
 const LABEL_LINE_HEIGHT = 14;
 
-// ─── Public types & helpers ──────────────────────────────────────────────────
+// ─── Internal types & helpers ─────────────────────────────────────────────────
 
 /** Physical bounds (in inches) that the SVG must accommodate. */
-export interface ScreenSizeBounds {
+interface ScreenSizeBounds {
   /** Largest physical width across all devices (inches). */
   maxWidth: number;
   /** Largest physical height across all devices (inches). */
@@ -30,10 +30,8 @@ function devicePhysicalSize(d: Device): { width: number; height: number } {
 
 /**
  * Calculate the smallest bounding box (in inches) that fits every device.
- * Pass the full list of devices so the map never rescales when the displayed
- * subset changes.
  */
-export function computeScreenSizeBounds(devices: Device[]): ScreenSizeBounds {
+function computeScreenSizeBounds(devices: Device[]): ScreenSizeBounds {
   let maxWidth = 0;
   let maxHeight = 0;
   for (const d of devices) {
@@ -135,39 +133,62 @@ interface DeviceRect {
   styleUrl: './screen-size-map.css',
 })
 export class ScreenSizeMap {
-  /** Devices to render as overlapping rectangles. */
+  /** Complete list of devices (used for stable bounds and color assignment). */
   devices = input.required<Device[]>();
 
-  /**
-   * Fixed physical bounds used to derive a stable scale factor.
-   * Compute once from the full device list via `computeScreenSizeBounds()`
-   * and pass in so the scale never shifts when the displayed subset changes.
-   */
-  bounds = input<ScreenSizeBounds>();
+  /** IDs of devices to render as overlapping rectangles. */
+  selectedDevices = input<string[]>([]);
 
   protected readonly LABEL_OFFSET_Y = LABEL_OFFSET_Y;
   protected readonly LABEL_LINE_HEIGHT = LABEL_LINE_HEIGHT;
 
-  /** Scale factor derived from the bounds input (or the current devices as fallback). */
+  /** Fixed physical bounds derived from all devices so the scale never shifts. */
+  private bounds = computed(() => computeScreenSizeBounds(this.devices()));
+
+  /** Map from device ID → index in the full devices array (for stable colors). */
+  private deviceIndexMap = computed(() => {
+    const map = new Map<string, number>();
+    this.devices().forEach((d, i) => map.set(d.id, i));
+    return map;
+  });
+
+  /** The selected devices resolved from the full list, preserving selectedDevices order. */
+  private selectedDevicesList = computed(() => {
+    const ids = new Set(this.selectedDevices());
+    const all = this.devices();
+    const byId = new Map(all.map((d) => [d.id, d]));
+    return this.selectedDevices()
+      .map((id) => byId.get(id))
+      .filter((d): d is Device => d !== undefined);
+  });
+
+  /** The y-coordinate of the shared bottom edge for all rects. */
+  private contentBottom = computed(() => {
+    const scale = this.scale();
+    const bounds = this.bounds();
+    if (bounds.maxHeight > 0) {
+      return PADDING + bounds.maxHeight * scale;
+    }
+    return PADDING;
+  });
+
+  /** Scale factor derived from the bounds of all devices. */
   private scale = computed(() => {
     const drawWidth = VIEWBOX_WIDTH - PADDING * 2;
     const bounds = this.bounds();
-    if (bounds && bounds.maxWidth > 0) {
+    if (bounds.maxWidth > 0) {
       return drawWidth / bounds.maxWidth;
     }
-    // Fallback: fit to the currently displayed devices
-    const devices = this.devices();
-    if (devices.length === 0) return 1;
-    const maxW = Math.max(...devices.map((d) => devicePhysicalSize(d).width));
-    return maxW > 0 ? drawWidth / maxW : 1;
+    return 1;
   });
 
   /** Compute physical dimensions, scale, and position all rectangles. */
   protected deviceRects = computed<DeviceRect[]>(() => {
-    const devices = this.devices();
+    const devices = this.selectedDevicesList();
     if (devices.length === 0) return [];
 
     const scale = this.scale();
+    const indexMap = this.deviceIndexMap();
 
     // 1. Compute physical dimensions for each device
     const physicals = devices.map((d) => {
@@ -177,22 +198,24 @@ export class ScreenSizeMap {
 
     // 2. Build rects, sorted by area descending (largest behind)
     const rects: DeviceRect[] = physicals
-      .map((p, index) => {
+      .map((p) => {
         const w = p.physicalWidth * scale;
         const h = p.physicalHeight * scale;
         const area = w * h;
 
-        // Top-center alignment: all share y=PADDING, centered horizontally
+        // Bottom-center alignment: all rects share the same bottom edge, centered horizontally
         const centerX = VIEWBOX_WIDTH / 2;
         const x = centerX - w / 2;
-        const y = PADDING;
+        const bottomY = this.contentBottom();
+        const y = bottomY - h;
 
         // Corner radius: map from pixel-space to physical-space, then to SVG-space
         const pxToPhysical = p.physicalWidth / p.device.screenPixelWidth;
         const rx = p.device.screenCornerRadius * pxToPhysical * scale;
         const ry = rx;
 
-        const colorIndex = index % DEVICE_COLORS.length;
+        // Color derived from device's index in the full list — stable across selections
+        const colorIndex = (indexMap.get(p.device.id) ?? 0) % DEVICE_COLORS.length;
         const stroke = DEVICE_COLORS[colorIndex];
         const fill = stroke.replace(')', ', 0.06)').replace('hsl(', 'hsla(');
 
@@ -218,19 +241,8 @@ export class ScreenSizeMap {
 
   /** ViewBox sized to the bounds (stable) or to actual content (fallback). */
   protected viewBox = computed(() => {
-    const scale = this.scale();
-    const bounds = this.bounds();
-
-    if (bounds && bounds.maxHeight > 0) {
-      const maxScaledH = bounds.maxHeight * scale;
-      const totalHeight = PADDING + maxScaledH + PADDING + LABEL_AREA_HEIGHT;
-      return `0 0 ${VIEWBOX_WIDTH} ${Math.max(totalHeight, MIN_VIEWBOX_HEIGHT)}`;
-    }
-
-    const rects = this.deviceRects();
-    if (rects.length === 0) return `0 0 ${VIEWBOX_WIDTH} ${MIN_VIEWBOX_HEIGHT}`;
-    const maxBottom = Math.max(...rects.map((r) => r.y + r.height));
-    const totalHeight = maxBottom + PADDING + LABEL_AREA_HEIGHT;
+    const bottom = this.contentBottom();
+    const totalHeight = bottom + PADDING + LABEL_AREA_HEIGHT;
     return `0 0 ${VIEWBOX_WIDTH} ${Math.max(totalHeight, MIN_VIEWBOX_HEIGHT)}`;
   });
 }
