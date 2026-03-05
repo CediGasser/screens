@@ -14,11 +14,13 @@ import { RouterLink } from '@angular/router';
     <main class="letter-box">
       <header>
         <h1>Screens</h1>
-        <div class="header-actions">
-          <a routerLink="/data" class="nav-link">Data Table &rarr;</a>
-          <button class="primary" (click)="openSuggestDialog()">Suggest a Device</button>
-        </div>
       </header>
+      <section class="intro">
+        <p>
+          Explore the evolution of screen sizes over time! Slide the timeline to see how devices
+          have changed.
+        </p>
+      </section>
       <section>
         <app-screen-size-map [devices]="devices()" [selectedDevices]="highlightedDeviceIds()" />
 
@@ -27,6 +29,9 @@ import { RouterLink } from '@angular/router';
           [highlightedDeviceIds]="highlightedDeviceIds()"
           (selectedDate)="onSelectedDateChange($event)"
         />
+        <div class="header-actions">
+          <a routerLink="/data" class="nav-link">Data Table &rarr;</a>
+        </div>
       </section>
 
       <app-device-form-dialog #deviceFormDialog (deviceCreated)="onDeviceCreated($event)" />

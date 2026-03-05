@@ -10,7 +10,7 @@ footer {
 }
 
 div {
-  padding-top: var(--space-4xl);
+  padding-top: var(--space-xl);
   min-height: 100dvh;
 }
 
