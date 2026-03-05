@@ -1,6 +1,19 @@
 manufacturer,name,type,releaseDate,screenSize,screenPixelWidth,screenPixelHeight,screenCornerRadius
+Nokia,3310,smartphone,2000-09-01,1.5,84,48,0
+Nokia,N-Gage,smartphone,2003-10-07,2.1,176,208,0
+Motorola,RAZR V3,smartphone,2004-11-01,2.2,176,220,0
+BlackBerry,8700,smartphone,2005-11-01,2.5,320,240,0
+Nokia,N95,smartphone,2007-03-26,2.6,240,320,0
+Apple,iPhone,smartphone,2007-06-29,3.5,320,480,0
+BlackBerry,Bold 9000,smartphone,2008-07-21,2.66,480,320,0
+HTC,Dream,smartphone,2008-10-22,3.2,320,480,0
+HTC,HD2,smartphone,2009-11-11,4.3,480,800,0
+Apple,iPhone 4,smartphone,2010-06-24,3.5,640,960,0
+Samsung,Galaxy S II,smartphone,2011-04-27,4.3,480,800,0
 Apple,iPhone 5,smartphone,2012-09-21,4.0,640,1136,0
 Samsung,Galaxy S4,smartphone,2013-04-27,5.0,1080,1920,0
+Samsung,Galaxy S5,smartphone,2014-04-11,5.1,1080,1920,0
+Apple,iPhone 6,smartphone,2014-09-19,4.7,750,1334,0
 Samsung,Galaxy S6,smartphone,2015-04-10,5.1,1440,2560,20
 Samsung,Galaxy S7,smartphone,2016-02-21,5.1,1440,2560,20
 Samsung,Galaxy S8,smartphone,2017-04-21,5.8,1440,2960,20
@@ -26,8 +39,17 @@ Apple,iPhone 17 Pro Max,smartphone,2025-09-11,6.90,1320,2868,20
 Samsung,Galaxy S26,smartphone,2026-02-25,6.3,1080,2340,20
 Samsung,Galaxy S26 Ultra,smartphone,2026-02-25,6.9,1440,3120,20
 Apple,iPad 1st Gen,tablet,2010-04-03,9.7,1024,768,0
+Samsung,Galaxy Tab,tablet,2010-09-02,7.0,1024,600,0
+Apple,iPad 2,tablet,2011-03-11,9.7,1024,768,0
+Samsung,Galaxy Tab 10.1,tablet,2011-06-08,10.1,1280,800,0
+Amazon,Kindle Fire,tablet,2011-11-15,7.0,1024,600,0
 Apple,iPad 3rd Gen,tablet,2012-03-16,9.7,2048,1536,0
+Google,Nexus 7 2012,tablet,2012-07-13,7.0,1280,800,0
+Microsoft,Surface RT,tablet,2012-10-26,10.6,1366,768,0
+Google,Nexus 10,tablet,2012-11-13,10.1,2560,1600,0
+Microsoft,Surface Pro,tablet,2013-02-09,10.6,1920,1080,0
 Apple,iPad Air,tablet,2013-11-01,9.7,2048,1536,0
+Apple,iPad Mini 2,tablet,2013-11-12,7.9,2048,1536,0
 Apple,iPad Air 2,tablet,2014-10-22,9.7,2048,1536,0
 Apple,iPad Pro 12.9 1st Gen,tablet,2015-11-11,12.9,2732,2048,0
 Apple,iPad Pro 10.5,tablet,2017-06-13,10.5,2224,1668,0
@@ -42,8 +64,17 @@ Samsung,Galaxy Tab S8 Ultra,tablet,2022-02-25,14.6,2960,1848,0
 Microsoft,Surface Pro 9,tablet,2022-10-25,13,2880,1920,0
 Apple,iPad Pro 13 M4,tablet,2024-05-15,13,2752,2064,20
 Apple,iPad Air 13 M3,tablet,2025-03-12,13,2732,2048,20
+IBM,ThinkPad T20,laptop,2000-05-01,14.1,1024,768,0
+Apple,PowerBook G4 Titanium,laptop,2001-01-09,15.2,1152,768,0
+Dell,Latitude D600,laptop,2003-03-12,14.1,1024,768,0
+IBM,ThinkPad T40,laptop,2003-03-13,14.1,1024,768,0
+IBM,ThinkPad T43,laptop,2005-04-01,14.1,1400,1050,0
+Lenovo,ThinkPad T60,laptop,2006-02-01,14.1,1400,1050,0
+Apple,MacBook Pro 15 2006,laptop,2006-02-14,15.4,1440,900,0
+Apple,MacBook Pro 15 Unibody,laptop,2008-10-14,15.4,1440,900,0
 Apple,MacBook Air 2010,laptop,2010-10-20,13.3,1440,900,0
 Lenovo,ThinkPad X1 Carbon 1st Gen,laptop,2012-08-21,14,1600,900,0
+Apple,MacBook Pro 13 Retina,laptop,2012-10-23,13.3,2560,1600,0
 Dell,XPS 13 9343,laptop,2015-01-06,13.3,3200,1800,0
 Apple,MacBook Pro 15 Retina,laptop,2015-05-19,15.4,2880,1800,0
 Lenovo,ThinkPad X1 Carbon 5th Gen,laptop,2017-02-01,14,1920,1080,0
@@ -59,6 +90,10 @@ Dell,XPS 13 Plus 9320,laptop,2022-03-01,13.4,1920,1200,0
 Apple,MacBook Air M2,laptop,2022-07-15,13.6,2560,1664,0
 Dell,XPS 14 9440,laptop,2024-03-01,14.5,1920,1200,0
 Apple,MacBook Air M4,laptop,2025-03-12,13.6,2560,1664,0
+Pebble,Pebble,wearable,2013-01-23,1.26,144,168,0
+Samsung,Galaxy Gear,wearable,2013-09-25,1.63,320,320,0
+LG,G Watch,wearable,2014-06-25,1.65,280,280,0
+Motorola,Moto 360,wearable,2014-09-05,1.56,320,290,0
 Apple,Watch 1st Gen 42mm,wearable,2015-04-24,1.53,312,390,0
 Apple,Watch Series 2 42mm,wearable,2016-09-16,1.53,312,390,0
 Apple,Watch Series 3 42mm,wearable,2017-09-22,1.53,312,390,0
