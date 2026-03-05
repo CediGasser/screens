@@ -85,7 +85,7 @@ import { LucideAngularModule, TreePalm } from 'lucide-angular';
       </ng-template>
       <ng-template #emptymessage>
         <tr>
-          <td colspan="9" style="text-align: center; padding: 2rem;">
+          <td colspan="100" style="text-align: center; padding: 2rem;">
             <lucide-icon [img]="TreePalmIcon" size="48" strokeWidth="1" /><br />
             Nothing to see here. <br />
           </td>
