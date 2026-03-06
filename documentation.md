@@ -259,6 +259,23 @@ Instead of every browser client fetching `/api/config` on startup, the SSR pass 
 
 # Conclusion
 
+**What went well?**
+
+Setting up Authentik as an OIDC provider was a very valuable learning experiences. This is also something I can re-use for other projects. Angular's `TransferState` also turned out to be a really elegant way of passing data from the SSR context to the client without extra HTTP round-trips — something that I miss in SvelteKit.
+
+**Where were the challenges?**
+
+SSR in Angular still feels like an afterthought. Guarding every browser-only API behind `isPlatformBrowser()` and splitting render modes per route added friction.
+I am also not a big fan of having every component be wrapped by an element. This in combination with SSR lead to some weird hydration bugs. The strict module boundary between `src/api/` and `src/app/` (no shared imports) kept the architecture clean but introduced noticeable code duplication — especially for type definitions and validation logic that both sides needed. Additionally, Vitest mocks (`vi.mock`) broke when Angular's build step processed the test files, forcing a split into two separate test runners.
+
+**What will I do differently in the future?**
+
+I'll go back to using SvelteKit but I will take some learnings with me. I now see the value of writing integration tests that check html structure. Before this project I always thought that testing UI components was unnecessary and I should only test actual business logic. I'd still argue that UI tests like these make more sense when a project becomes larger.
+
+In a next iteration I would also consider a thin shared types package between frontend and backend to reduce duplication without coupling the modules. If the project were not a public facing site where SEO is not a requirement, I'd definitely have a statically hosted SPA with no SSR and a separate backend for better separation.
+
+The clean separation into services, pipes, components etc. that angular strongly encourages with its CLI is something that I did not do in SvelteKit projects. This, combined with the insights into architectural aspects, inspired me to more carefully plan my projects in the future, which is probably the best thing I take away from this project.
+
 # Work journal
 
 | Date       |  Hours | Activities                                                                                                                                                                                                                                                             |
